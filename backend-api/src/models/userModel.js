@@ -11,7 +11,7 @@ const userModel = {
     },
 
     getUserEmail : (email) =>{
-        return db('user').where({user_email: emal}).first();
+        return db('user').where({user_email: email}).first();
     },
 
     getUserAddress : (address) =>{
@@ -37,7 +37,7 @@ const userModel = {
         })
     },
 
-    login: (username) =>{
+    login: (username,password) =>{
         return db('user').where({user_name: username})
     },
 
@@ -57,4 +57,4 @@ const userModel = {
 
 }
 
-module.export = userModel
+module.exports = userModel

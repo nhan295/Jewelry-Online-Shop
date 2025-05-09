@@ -1,8 +1,7 @@
-const express = require('express');
-const app = express();
-const db = require('./src/config/db'); // <-- bé phải import pool từ db.js vào
-
-
-app.listen(3000, () => {
-  console.log('Server đang chạy ở http://localhost:3000');
+require('dotenv').config();
+const app = require('./src/app');
+// Start the server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+console.log(`Server is running on http://localhost:${port}.`);
 });

@@ -1,19 +1,16 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
-const getUserData = async(req, res) =>{
-    try{
-        const users = await userModel.getUserData();
-    }
-    catch (error){
-        console.error(error)
-        res.status(500).json({message: 'Error retrieving userdata'})
-    }
+const getUserData = (req, res) =>{
+   if(!req.session.user){
+    return res.status(401).json({message:'not authenticate'})
+   }
+   res.status(200).json({user: req.session.user})
 }
 
 const register = async(req,res) =>{
     try{
-        const {username, email, address, password, confirmPass, date} = req.body
+        const {username, email, password, address, confirmPass, date} = req.body
         if(!username || !email || !password || !confirmPass){
             return res.status(400).json({message:'Missing fiels'})
         }
@@ -29,8 +26,6 @@ const register = async(req,res) =>{
         if(password !== confirmPass){
             return res.status(400).json({message:'Password do not matching'})
         }
-
-        
         
         const hashedPassword = await bcrypt.hash(password,10);
         
@@ -47,8 +42,81 @@ const register = async(req,res) =>{
         res.status(500).json({message: 'Error register!!'})
     }
 }
+
+const login = async(req,res) =>{
+    try{
+        const {username,password} = req.body;
+        const getUserName = await userModel.getUserName(username)
+
+        if(!getUserName){
+            return res.status(401).json({message:'username not exist'})
+        }
+
+        const getPassword = await userModel.getUserPass(username)
+        const match = await bcrypt.compareSync(password, getPassword);
+     
+        console.log('Hashed password from DB:', getPassword);
+        console.log(' User input password:', password);
+        console.log('Compare result:', match);
+
+        if(!match){
+            return res.status(401).json({message:'password does not match'})
+        }
+        else{
+            req.session.user = await userModel.getUserData(username)
+            req.session.user_name = username
+            res.status(200).json({message: req.session.user})
+        }
+
+    }
+    catch(error){
+        console.error(error)
+        res.status(500).json({message: 'Error login!!'})
+    }
+}
+
+
+
+const changePass = async(req, res)=>{
+    const userId = req.session.user.user_id;
+    const {currentPass,newPass,confirmPass} = req.body
+
+    if(!currentPass || !newPass || !confirmPass){
+        return res.status(401).json({message:'Missing fields'})
+    }
+    if(newPass !== currentPass){
+        return res.status(401).json({message:'Password not match'})
+    }
+
+    const oldPass = await userModel.passwordByUserId(userId)
+    const match = await bcrypt.compareSync(currentPass, oldPass)
+
+    if(match){
+        const newHashPass = await bcrypt.hash(newPass,10)
+        await userModel.changePass(userId, newHashPass)
+        res.status(200).json({message: 'Password changed'})
+    }
+    else{
+        return res.status(401).json({message:'wrong current password'})
+    }
+
+}
+
+const logout = async(req,res) =>{
+    req.session.destroy((err) =>{
+        if(err){
+            console.error(err)
+            return res.status(500).json({message:'error logout'})
+
+        }
+        res.clearCookie('connect.sid')
+        res.status(200).json({message:'logged out'})
+    })
+}
 module.exports = {
     getUserData,
-    register
-
+    register,
+    login,
+    changePass,
+    logout
 }
