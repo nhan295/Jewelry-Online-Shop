@@ -19,8 +19,11 @@ create table categories(
     categories_name varchar(100)
 );
 insert into categories(categories_name) value('vong');
-select * from categories;
-
+select c.categories_name,
+		s.sub_name
+        from categories c
+join sub_categories s
+on s.categories_id=c.categories_id;
 
 create table color_code(
 	color_id int primary key auto_increment,
@@ -89,7 +92,7 @@ create table size(
     
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
-insert into size(size_number,jewelry_id,quantity) value(12,1,10);
+insert into size(size_number,jewelry_id,quantity) value(20,1,5);
 
 select j.jewelry_name,
 	   j.jewelry_img,
