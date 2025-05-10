@@ -75,15 +75,6 @@ create table cart(
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
 
-create table favorite(
-	favorite_id int primary key auto_increment,
-    user_id int,
-    jewelry_id int,
-    
-    foreign key(user_id) references user(user_id),
-    foreign key(jewelry_id) references jewelry(jewelry_id)
-);
-
 create table size(
 	size_id int primary key auto_increment,
     size_number int,

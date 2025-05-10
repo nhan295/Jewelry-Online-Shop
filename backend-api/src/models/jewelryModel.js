@@ -7,9 +7,9 @@ const jewveryModel = {
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
                 'color_code.color_name')
-        .innerJoin('sub_catagories', 'sub_catagories.sub_id', 'jewelry.sub_id')
+        .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
         .innerJoin('color_code', 'color_code.color_id', 'jewelry.color_id')
-        .where('sub_catagories.sub_name', `${sub_category}`);
+        .where('sub_categories.sub_name', `${sub_category}`);
 },
 
     getJewById: (jewelry_id) =>{
@@ -28,9 +28,9 @@ const jewveryModel = {
          .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
                 'color_code.color_name')
-        .innerJoin('sub_catagories', 'sub_catagories.sub_id', 'jewelry.sub_id')
+        .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
         .innerJoin('color_code', 'color_code.color_id', 'jewelry.color_id')
-        .where('jewelry.jewelry_name' `${name}`)
+        .where('jewelry.jewelry_name',`${name}`)
         .limit(4)
     }
 

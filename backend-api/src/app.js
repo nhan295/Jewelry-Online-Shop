@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const userRoute = require('./routes/userRoute');
+const jewelryRoute = require('./routes/jewelryRoute');
 
 const app = express();
 const session = require('express-session');
@@ -27,5 +28,6 @@ app.use(session({
 }))
 
 userRoute.setup(app)
+jewelryRoute.setup(app)
 
 module.exports = app
