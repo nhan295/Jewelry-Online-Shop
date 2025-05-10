@@ -2,7 +2,14 @@ const db = require('../config/db')
 
 const jewveryModel = {
 
-    getJewByCategory: (sub_category) => {
+    getJewByCategory: (category) =>{ //Loc chi muc con thuoc categories
+        return db('categories')
+        .select('sub_categories.sub_name')
+        .innerJoin('sub_categories','sub_categories.categories_id','categories.categories_id')
+        .where('categories.categories_name',`${category}`)
+    },
+
+    getJewBySubCategory: (sub_category) => { // Loc san pham tu sub_categories
     return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
@@ -12,7 +19,7 @@ const jewveryModel = {
         .where('sub_categories.sub_name', `${sub_category}`);
 },
 
-    getJewById: (jewelry_id) =>{
+    getJewById: (jewelry_id) =>{    // Xem chi tiet san pham
         return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_img',

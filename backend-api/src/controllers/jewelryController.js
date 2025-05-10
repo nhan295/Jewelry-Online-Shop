@@ -1,8 +1,17 @@
 const jewelryModel = require('../models/jewelryModel')
 
-const getJewByCategory = async(req,res) =>{
+const getJewBySubCategory = async(req,res) =>{
     const{sub_category} = req.params; //lay gia tri tu tham so url
-    const jewShow = await jewelryModel.getJewByCategory(sub_category)
+    const jewShow = await jewelryModel.getJewBySubCategory(sub_category)
+
+    if(jewShow){
+        res.json({message: jewShow})
+    }
+};
+
+const getJewByCategory = async(req,res) =>{
+    const{category} = req.params; //lay gia tri tu tham so url
+    const jewShow = await jewelryModel.getJewByCategory(category)
 
     if(jewShow){
         res.json({message: jewShow})
@@ -34,6 +43,7 @@ const searchJewByName = async(req,res) =>{
 
 
 module.exports = {
+    getJewBySubCategory,
     getJewByCategory,
     getJewById,
     searchJewByName

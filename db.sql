@@ -19,11 +19,6 @@ create table categories(
     categories_name varchar(100)
 );
 insert into categories(categories_name) value('vong');
-select c.categories_name,
-		s.sub_name
-        from categories c
-join sub_categories s
-on s.categories_id=c.categories_id;
 
 create table color_code(
 	color_id int primary key auto_increment,
@@ -39,7 +34,7 @@ create table sub_categories(
     
     foreign key (categories_id) references categories(categories_id)
 );
-insert into sub_categories(categories_id,sub_name) value(1,'vong bac');
+insert into sub_categories(categories_id,sub_name) value(1,'vong vang');
 select * from sub_categories;
 
 create table jewelry(
@@ -56,14 +51,6 @@ create table jewelry(
 );
 insert into jewelry(jewelry_name,sub_id,color_id, jewelry_price) values('pandora bac',1,1,200000);
 select * from jewelry;
-SELECT 
-    j.jewelry_name,
-    j.jewelry_img,
-    c.color_name,
-    s.sub_name
-FROM jewelry j
-JOIN color_code c ON j.color_id = c.color_id
-JOIN sub_categories s ON j.sub_id = s.sub_id;
 
 create table cart(
 	cart_id int primary key auto_increment,
@@ -84,13 +71,32 @@ create table size(
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
 insert into size(size_number,jewelry_id,quantity) value(20,1,5);
-
+-- ---------getJewById-----------------------------
 select j.jewelry_name,
 	   j.jewelry_img,
 	   s.size_number,
        s.quantity
 from jewelry j
-join size s on j.jewelry_id = s.jewelry_id
+join size s on j.jewelry_id = s.jewelry_id;
+-- ---------------------------------------------------
 
+-- getJewBysubCategory------------------------
+SELECT 
+    j.jewelry_name,
+    j.jewelry_img,
+    c.color_name,
+    s.sub_name
+FROM jewelry j
+JOIN color_code c ON j.color_id = c.color_id
+JOIN sub_categories s ON j.sub_id = s.sub_id;
+-- ---------------------------------------------------
+
+-- getJewByCategory--------------------------------
+select c.categories_name,
+		s.sub_name
+        from categories c
+join sub_categories s
+on s.categories_id=c.categories_id;
+-- ----------------------------------------
 
 
