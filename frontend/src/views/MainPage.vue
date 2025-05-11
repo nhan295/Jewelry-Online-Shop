@@ -12,8 +12,7 @@ const selectedCategory = ref(null);
 // Toggle: nếu người dùng chọn lại cùng category thì ẩn đi
 const handleCategorySelect = (category) => {
   selectedCategory.value = 
-    selectedCategory.value === category ? null : category;
+    selectedCategory.value === category ? null : category;   //cap nhat selectedCategory voi gia tri duoc chon tu event select-category
 };
 </script>
 
-//cap nhat selectedCategory voi gia tri duoc chon tu event select-category

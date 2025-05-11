@@ -37,6 +37,7 @@
 
       <div class="header-bottom">
         <div class="nav">
+          
           <a href="" @click.prevent="selectCategory('vong')">VÒNG TAY
             <i :class="['fas', activeCategory==='vong' ? 'fa-chevron-down': 'fas fa-chevron-up']"></i>
           </a>
@@ -44,11 +45,9 @@
           <a href="" @click.prevent="selectCategory('daychuyen')">NHẪN
             <i :class="['fas', activeCategory==='daychuyen' ? 'fa-chevron-down': 'fas fa-chevron-up']"></i>
           </a>
+
         </div>
-
       </div>
-
-       
     </div>
   </div>
 </template>
@@ -56,10 +55,10 @@
 <script setup>
 import {ref} from 'vue';
 
-const activeCategory = ref(null);
+const activeCategory = ref(null);  //quan li trang thai mui ten
 const emit = defineEmits(['select-category']);  //khai bao emit cho su kien select-category
 const selectCategory = (category) => {
-  activeCategory.value = activeCategory.value === category ? null: category
+  activeCategory.value = activeCategory.value === category ? null: category    //nếu mục đó đã được mở thì gán lại null
   emit('select-category',activeCategory.value) //phat ra su kien kem theo du lieu cua category  
 }
 </script>
