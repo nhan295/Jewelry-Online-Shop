@@ -9,8 +9,11 @@ import subcateShow from '../components/subcateShow.vue';
 import {ref} from 'vue';
 
 const selectedCategory = ref(null);
-const handleCategorySelect = (category) =>{
-    selectedCategory.value = category         //cap nhat selectedCategory voi gia tri duoc chon tu event select-category
-}
+// Toggle: nếu người dùng chọn lại cùng category thì ẩn đi
+const handleCategorySelect = (category) => {
+  selectedCategory.value = 
+    selectedCategory.value === category ? null : category;
+};
 </script>
 
+//cap nhat selectedCategory voi gia tri duoc chon tu event select-category
