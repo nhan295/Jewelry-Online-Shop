@@ -18,8 +18,8 @@ create table categories(
 	categories_id int primary key auto_increment,
     categories_name varchar(100)
 );
-insert into categories(categories_name) value('vong');
-
+insert into categories(categories_name) value('daychuyen');
+select * from categories;
 create table color_code(
 	color_id int primary key auto_increment,
     color_name varchar(12)
@@ -34,7 +34,7 @@ create table sub_categories(
     
     foreign key (categories_id) references categories(categories_id)
 );
-insert into sub_categories(categories_id,sub_name) value(1,'vong vang');
+insert into sub_categories(categories_id,sub_name) value(3,'day chuyen vang');
 select * from sub_categories;
 
 create table jewelry(

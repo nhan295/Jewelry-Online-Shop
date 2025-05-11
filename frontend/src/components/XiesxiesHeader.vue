@@ -36,21 +36,23 @@
       </div>
 
       <div class="header-bottom">
-        <nav class="nav">
-          <a href="#">VÒNG TAY <i class="fas fa-chevron-down"></i></a>
-          <a href="#">CHARMS <i class="fas fa-chevron-down"></i></a>
-          <a href="#">DÂY CHUYỀN <i class="fas fa-chevron-down"></i></a>
-          <a href="#">HOA TAI <i class="fas fa-chevron-down"></i></a>
-          <a href="#">NHẪN <i class="fas fa-chevron-down"></i></a>
-          <a href="#">TRANG SỨC ĐÔI <i class="fas fa-chevron-down"></i></a>
-        </nav>
+        <div class="nav">
+          <a href="" @click.prevent="selectCategory('vong')">VÒNG TAY<i class="fas fa-chevron-down"></i></a>
+          <a href="" @click.prevent="selectCategory('daychuyen')">NHẪN<i class="fas fa-chevron-down"></i></a>
+        </div>
+
       </div>
+
+       
     </div>
   </div>
 </template>
 
 <script setup>
-
+const emit = defineEmits(['select-category']);  //khai bao emit cho su kien select-category
+const selectCategory = (category) =>{
+  emit('select-category',category) //phat ra su kien kem theo du lieu cua category  
+}
 </script>
 
 <style scoped>
@@ -59,7 +61,7 @@
 /* Tổng thể header */
 .header {
   width: 100%;
-  background-color: #000;
+  background-color: #ffffff;
   color: white;
   font-family: Arial, sans-serif;
 }
