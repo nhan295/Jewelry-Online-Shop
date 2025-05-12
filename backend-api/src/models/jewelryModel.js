@@ -13,6 +13,7 @@ const jewveryModel = {
     return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
+                'jewelry.jewelry_img',
                 'color_code.color_name')
         .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
         .innerJoin('color_code', 'color_code.color_id', 'jewelry.color_id')

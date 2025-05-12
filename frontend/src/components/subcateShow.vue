@@ -6,7 +6,7 @@
             >
               {{ categories.sub_name }}
             </h4>
-        </div>
+      </div>
 </template>
 <script setup>
 import { ref, onMounted, watch } from "vue";
@@ -40,7 +40,7 @@ const fetchSubCate = async () => {
       };
     });
     console.log(cateList);
-    cateLists.value = newcateList;
+    cateLists.value = newcateList;   //gán dữ liệu đã lọc vào cateList
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -49,7 +49,7 @@ const fetchSubCate = async () => {
 };
 
 onMounted(fetchSubCate);
-watch(() => props.sub_categories, fetchSubCate);
+watch(() => props.category, fetchSubCate);  //Theo dõi sự thay đổi của props.category, và mỗi khi nó thay đổi thì gọi hàm fetchSubCate để cập nhật dữ liệu
 
 
 </script>

@@ -25,7 +25,7 @@ create table color_code(
     color_name varchar(12)
 );
 
-insert into color_code (color_name) values ('red');
+insert into color_code (color_name) values ('blue');
 
 create table sub_categories(
 	sub_id int primary key auto_increment,
@@ -49,7 +49,7 @@ create table jewelry(
     foreign key(sub_id) references sub_categories(sub_id),
 	foreign key(color_id) references color_code(color_id)
 );
-insert into jewelry(jewelry_name,sub_id,color_id, jewelry_price) values('pandora bac',1,1,200000);
+insert into jewelry(jewelry_name,sub_id,color_id, jewelry_price) values('pandora bac',1,2,200000);
 select * from jewelry;
 
 create table cart(
@@ -84,6 +84,7 @@ join size s on j.jewelry_id = s.jewelry_id;
 SELECT 
     j.jewelry_name,
     j.jewelry_img,
+    j.jewelry_price,
     c.color_name,
     s.sub_name
 FROM jewelry j
