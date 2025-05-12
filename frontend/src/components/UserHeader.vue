@@ -25,7 +25,7 @@
                   <i class="fas fa-user"></i>
                 </div>
                 <div class="user-dropdown">
-                  <router-link to="">User Infomation</router-link>
+                  <router-link to="/profile">User Infomation</router-link>
                   <router-link to="../index">Logout</router-link>
                 </div>
               </div>
