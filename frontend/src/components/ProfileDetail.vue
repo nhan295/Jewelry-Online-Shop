@@ -45,7 +45,34 @@
         </div>
 
         <div class="user_address"></div>
-            <h2>hello</h2>
+             <div class="address-box">
+    <div class="header">
+      <i class="fa fa-truck"></i>
+      <strong>DANH SÁCH ĐỊA CHỈ</strong>
+      <a class="view-all" href="#">Xem tất cả</a>
+    </div>
+
+    <hr />
+
+    <!-- Danh sách địa chỉ -->
+    <div class="address-item">
+      <div>
+        <strong>Trần Nhan - 0375458318</strong>
+        <div>, Vietnam</div>
+        <div class="label">Nhà riêng</div>
+      </div>
+      <span class="default-tag">Mặc định</span>
+      <button class="edit-btn">
+        <i class="fa fa-pen"></i>
+      </button>
+    </div>
+
+    <!-- Thêm địa chỉ mới -->
+    <div class="add-new" @click="addNew">
+      <i class="fa fa-plus"></i>
+      <span>Thêm địa chỉ mới</span>
+    </div>
+  </div>
         </div>
   </div>
 </template>
@@ -164,5 +191,71 @@ onMounted(() => {
     display: block;
     font-weight: 600;
     margin-bottom: 4px;
+}
+
+.address-box {
+  border: 1px solid #ccc;
+  padding: 16px;
+  width: 100%;
+  max-width: 600px;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+
+.view-all {
+  margin-left: auto;
+  font-weight: bold;
+  color: black;
+}
+
+.address-item {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.default-tag {
+  background-color: #d9f2ff;
+  color: #007acc;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  position: absolute;
+  top: 12px;
+  right: 50px;
+}
+
+.label {
+  color: #d94f4f;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.add-new {
+  border: 1px dashed #aaa;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
 }
 </style>

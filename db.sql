@@ -11,24 +11,35 @@ create table user(
 	user_address int,
 	date_created date
 );
+-- bỏ address lúc đk và sau khi đăng kí thì mới cho cập nhật địa chỉ và chỉ cập nhật vào record
+
 insert into user(user_name,user_email,address_id) value('tuitennhan','nhan9@gmail.com','3');
 select u.user_name,u.user_email,u.user_mobile,a.address_detail,u.date_created
 from user u
 join address a on u.address_id=a.address_id;
-create table address(
-	address_id int primary key auto_increment,
-    address_detail varchar(255) unique
-);
-select * from address;
-insert into address(address_detail) value('can tho');
 
-select * from user;
-drop table sub_categories;
+create table user_record (
+	record_id int primary key auto_increment,
+    user_id int,
+    record_username varchar(50),
+    record_mobile char(10) check (regexp_replace(record_mobile, '[^0-9]', '')),
+    record_district varchar(50),
+    record_province varchar(50),
+    record_ward varchar(50),
+    street_address varchar(50),
+    
+    foreign key(user_id) references user(user_id),
+    foreign key(province_id) references province(province_id),
+    foreign key(district_id) references district(district_id),
+    foreign key(ward_id) references ward(ward_id)
+
+);
+
 create table categories(
 	categories_id int primary key auto_increment,
     categories_name varchar(100)
 );
-insert into categories(categories_name) value('daychuyen');
+insert into categories(categories_name) value('dây chuyền bạc');
 select * from categories;
 create table color_code(
 	color_id int primary key auto_increment,
@@ -46,7 +57,7 @@ create table sub_categories(
     
     foreign key (categories_id) references categories(categories_id)
 );
-insert into sub_categories(categories_id,sub_name) value(3,'day chuyen vang');
+insert into sub_categories(categories_id,sub_name) value(3,'dây chuyền vàng');
 select * from sub_categories;
 
 create table jewelry(

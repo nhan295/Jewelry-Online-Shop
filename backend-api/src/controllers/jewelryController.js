@@ -1,8 +1,8 @@
 const jewelryModel = require('../models/jewelryModel')
 
 const getJewBySubCategory = async(req,res) =>{
-    const{sub_category} = req.params; //lay gia tri tu tham so url
-    const jewShow = await jewelryModel.getJewBySubCategory(sub_category)
+    const{sub_id} = req.params; //lay gia tri tu tham so url
+    const jewShow = await jewelryModel.getJewBySubCategory(sub_id)
 
     if(jewShow){
         res.json({message: jewShow})

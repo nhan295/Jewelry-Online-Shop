@@ -4,12 +4,12 @@ const jewveryModel = {
 
     getJewByCategory: (category) =>{ //Loc chi muc con thuoc categories
         return db('categories')
-        .select('sub_categories.sub_name')
+        .select('sub_categories.sub_name','sub_categories.sub_id')
         .innerJoin('sub_categories','sub_categories.categories_id','categories.categories_id')
         .where('categories.categories_name',`${category}`)
     },
 
-    getJewBySubCategory: (sub_category) => { // Loc san pham tu sub_categories
+    getJewBySubCategory: (sub_id) => { // Loc san pham tu sub_categories
     return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
@@ -17,7 +17,7 @@ const jewveryModel = {
                 'color_code.color_name')
         .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
         .innerJoin('color_code', 'color_code.color_id', 'jewelry.color_id')
-        .where('sub_categories.sub_name', `${sub_category}`);
+        .where('sub_categories.sub_id', `${sub_id}`);
 },
 
     getJewById: (jewelry_id) =>{    // Xem chi tiet san pham
