@@ -1,12 +1,13 @@
+<!-- Người dùng chưa đăng nhập -->
+
 <template>
-    <UserHeader @select-category="handleCategorySelect"/>   <!--lang nghe su kien select-category--> 
+    <XiesxiesHeader @select-category="handleCategorySelect"/>   <!--lang nghe su kien select-category--> 
     <SubcateShow v-if="selectedCategory":category="selectedCategory"/>   <!--lưu trạng thái mục đã chọn--> 
 </template>
 
 <script setup>
-
+import XiesxiesHeader from '@/components/XiesxiesHeader.vue';
 import SubcateShow from '../components/SubcateShow.vue';
-import UserHeader from '../components/UserHeader.vue';
 import {ref} from 'vue';
 
 const selectedCategory = ref(null);

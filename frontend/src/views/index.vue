@@ -112,7 +112,7 @@ const handleLogin = async() => {
     })
     const resData = await response.json
     if(response.ok){
-      router.push('/')
+      router.push('/userpage')
     }else{
       message.value = resData.message || 'Login failed'
     }
@@ -143,7 +143,7 @@ const handleRegister = async () => {
     const resData = await response.json()
 
     if (response.ok) {
-      router.push('/')
+      router.push('/userpage')
     } else {
       message.value = resData.message || 'Đăng ký thất bại.'
     }
