@@ -8,7 +8,7 @@
 <script setup>
 
 import ProfileDetail from '../components/ProfileDetail.vue';
-import SubcateShow from '../components/SubcateShow.vue';
+import SubcateShow from '../components/MenuShow.vue';
 import UserHeader from '../components/UserHeader.vue';
 
 import {ref} from 'vue';

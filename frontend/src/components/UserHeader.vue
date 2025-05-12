@@ -26,7 +26,7 @@
                 </div>
                 <div class="user-dropdown">
                   <router-link to="/profile">User Infomation</router-link>
-                  <router-link to="../index">Logout</router-link>
+                  <a href="#" @click="logout()">Logout</a>
                 </div>
               </div>
             </div>
@@ -54,12 +54,26 @@
 
 <script setup>
 import {ref} from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const activeCategory = ref(null);  //quan li trang thai mui ten
 const emit = defineEmits(['select-category']);  //khai bao emit cho su kien select-category
 const selectCategory = (category) => {
   activeCategory.value = activeCategory.value === category ? null: category    //nếu mục đó đã được mở thì gán lại null
   emit('select-category',activeCategory.value) //phat ra su kien kem theo du lieu cua category  
+}
+
+const logout = async() =>{
+  const response = await fetch("http://localhost:3000/api/v1/user/logout",{
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    credentials: 'include'
+  })
+  if(response.ok){
+    router.push('/')
+  }
 }
 </script>
 

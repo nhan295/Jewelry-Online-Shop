@@ -1,17 +1,15 @@
 <template>
-    <div class="sub_cate">
-            <h4
-              v-for="(categories, index) in cateLists"
-              :key="categories.sub_id"
-            >
-              {{ categories.sub_name }}
-            </h4>
-      </div>
+  <div class="sub_cate">
+    <div v-for="(categories, index) in cateLists" :key="categories.sub_id">
+      <a href="">{{ categories.sub_name }}</a>
+    </div>
+  </div>
 </template>
 <script setup>
 import { ref, onMounted, watch } from "vue";
 
-const props = defineProps({  //nhan gia tri tu component cha qua category
+const props = defineProps({
+  //nhan gia tri tu component cha qua category
   category: String,
 });
 
@@ -40,7 +38,7 @@ const fetchSubCate = async () => {
       };
     });
     console.log(cateList);
-    cateLists.value = newcateList;   //gán dữ liệu đã lọc vào cateList
+    cateLists.value = newcateList; //gán dữ liệu đã lọc vào cateList
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -49,13 +47,24 @@ const fetchSubCate = async () => {
 };
 
 onMounted(fetchSubCate);
-watch(() => props.category, fetchSubCate);  //Theo dõi sự thay đổi của props.category, và mỗi khi nó thay đổi thì gọi hàm fetchSubCate để cập nhật dữ liệu
-
-
+watch(() => props.category, fetchSubCate); //Theo dõi sự thay đổi của props.category, và mỗi khi nó thay đổi thì gọi hàm fetchSubCate để cập nhật dữ liệu
 </script>
 
 <style scoped>
-h4 {
-  color: #151515;
+a {
+  color: #3e3e3e;
+  padding-left: 35px;
+  text-decoration: none;
+  font-size: larger;
+  font-family: 'Roboto';
+  font-weight: bold;
+}
+.sub_cate {
+  position: absolute;
+  width: 100vw;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 999;
 }
 </style>

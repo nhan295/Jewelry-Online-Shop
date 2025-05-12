@@ -8,9 +8,19 @@ create table user(
     user_name varchar(50),
 	user_email varchar(50) check (`user_Email` regexp "^[a-zA-Z0-9][a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]*?[a-zA-Z0-9._-]?@[a-zA-Z0-9][a-zA-Z0-9._-]*?[a-zA-Z0-9]?\\.[a-zA-Z]{2,63}$"),
     user_mobile char(10) check (regexp_replace(user_mobile, '[^0-9]', '')),
-	user_address varchar(150),
+	user_address int,
 	date_created date
 );
+insert into user(user_name,user_email,address_id) value('tuitennhan','nhan9@gmail.com','3');
+select u.user_name,u.user_email,u.user_mobile,a.address_detail,u.date_created
+from user u
+join address a on u.address_id=a.address_id;
+create table address(
+	address_id int primary key auto_increment,
+    address_detail varchar(255) unique
+);
+select * from address;
+insert into address(address_detail) value('can tho');
 
 select * from user;
 drop table sub_categories;
@@ -22,8 +32,10 @@ insert into categories(categories_name) value('daychuyen');
 select * from categories;
 create table color_code(
 	color_id int primary key auto_increment,
-    color_name varchar(12)
+    color_name varchar(12) unique
 );
+select * from color_code;
+drop table color_code;
 
 insert into color_code (color_name) values ('blue');
 
@@ -64,7 +76,7 @@ create table cart(
 
 create table size(
 	size_id int primary key auto_increment,
-    size_number int,
+    size_number int unique,
     jewelry_id int,
     quantity int,
     
