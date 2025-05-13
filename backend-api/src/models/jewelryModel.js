@@ -12,6 +12,7 @@ const jewveryModel = {
     getJewBySubCategory: (sub_id) => { // Loc san pham tu sub_categories
     return db('jewelry')
         .select('jewelry.jewelry_name',
+                'sub_categories.sub_name',
                 'jewelry.jewelry_price', 
                 'jewelry.jewelry_img',
                 'color_code.color_name')
