@@ -2,23 +2,23 @@
   <div class="products-wrapper">
     <div
       class="product-card"
-      v-for="(jewelry, index) in productList"
+      v-for="(jewelry, index) in productList"       
       :key="index"
-    >
+    >  <!--sản phẩm đã gộp theo màu -->
       <div class="product-image">
         <img :src="jewelry.color_code[jewelry.activeColorIndex].jewelry_img"
         alt="jewelry image" />
-      </div>
+      </div> <!--hiển thị ảnh của màu hiện tại-->
 
       <div class="color-options">
         <span
           class="color-circle"
           v-for="(color_code, idx) in jewelry.color_code"
           :key="idx"
-          :style="{ backgroundColor: color_code.color_name }"
+          :style="{ backgroundColor: color_code.color_name }"    
           @click="jewelry.activeColorIndex = idx"
           :class="{ active:idx === jewelry.activeColorIndex }"
-        ></span>
+        ></span>  <!--lấy màu theo index cập nhật vào activeColorIndex-->
       </div>
 
       <div class="product-name">
@@ -58,16 +58,16 @@ const fetchProduct = async () => {
     const groupProduct = {};
     
     productData.forEach(jewelry=>{
-        const key = jewelry.jewelry_name
+        const key = jewelry.jewelry_name   //gộp sp có cùng tên
         if(!groupProduct[key]){
             groupProduct[key] = {
                 jewelry_id: jewelry.jewelry_id,
                 jewelry_name: jewelry.jewelry_name,
-                activeColorIndex: 0,
+                activeColorIndex: 0,    //kieu mangs
                 color_code: []
             }
         }
-        groupProduct[key].color_code.push({
+        groupProduct[key].color_code.push({   //tách sp theo từng mã màu mỗi mã theo thứ tự activeColorIndex
             color_name: jewelry.color_name,
             jewelry_img: jewelry.jewelry_img,
             jewelry_price: jewelry.jewelry_price

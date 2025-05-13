@@ -27,6 +27,8 @@
                 <div class="form active">
                       <input type="password" placeholder="Password" v-model="loginForm.password" required>
                 </div>
+                
+                <span class="message-resgister">{{message}}</span>
             
             <button type="submit" class="submit-btn">Login</button>
             </form>
