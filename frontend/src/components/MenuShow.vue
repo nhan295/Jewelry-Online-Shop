@@ -1,7 +1,7 @@
 <template>
-  <div class="sub_cate">
+  <div class="sub_cate" v-if="showSubCate">
     <div v-for="(categories, index) in cateLists" :key="categories.sub_id">
-      <a href="">{{ categories.sub_name }}</a>
+      <a href="#" @click.prevent="selectedSubId(categories.sub_id)">{{ categories.sub_name }}</a>
     </div>
   </div>
 </template>
@@ -16,6 +16,7 @@ const props = defineProps({
 const cateLists = ref([]);
 const loading = ref([true]);
 const error = ref([null]);
+const showSubCate = ref(true);
 const fetchSubCate = async () => {
   loading.value = true;
   error.value = null;
@@ -45,6 +46,13 @@ const fetchSubCate = async () => {
     loading.value = false;
   }
 };
+
+const emit = defineEmits(['select-subcate']);  
+const selectedSubId = (sub_id) => {
+  emit('select-subcate',sub_id) 
+  showSubCate.value = false;
+}
+
 
 onMounted(fetchSubCate);
 watch(() => props.category, fetchSubCate); //Theo dõi sự thay đổi của props.category, và mỗi khi nó thay đổi thì gọi hàm fetchSubCate để cập nhật dữ liệu
