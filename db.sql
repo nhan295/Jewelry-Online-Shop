@@ -1,5 +1,7 @@
 create database jewelry;
 use jewelry;
+use books;
+select*from book;
 
 drop table user;
 create table user(
@@ -73,6 +75,7 @@ create table jewelry(
 	foreign key(color_id) references color_code(color_id)
 );
 insert into jewelry(jewelry_name,sub_id,color_id, jewelry_price) values('pandora bac',1,2,200000);
+insert into jewelry(jewelry_name,jewelry_img,sub_id,color_id, jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
 select * from jewelry;
 
 create table cart(
@@ -105,6 +108,7 @@ join size s on j.jewelry_id = s.jewelry_id;
 
 -- getJewBysubCategory------------------------
 SELECT 
+	s.sub_name,
     j.jewelry_name,
     j.jewelry_img,
     j.jewelry_price,
