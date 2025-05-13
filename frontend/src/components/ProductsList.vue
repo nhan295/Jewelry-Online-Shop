@@ -1,24 +1,35 @@
 <template>
-    <div class="products-wrapper">
-        <div class="product-card" v-for="(jewelry, index) in productList" :key="jewelry.jewelry_id">
-            <div class="product-image">
-                <img :src="jewelry.jewelry_img" alt="jewelry image">
-            </div>
+  <div class="products-wrapper">
+    <div
+      class="product-card"
+      v-for="(jewelry, index) in productList"
+      :key="index"
+    >
+      <div class="product-image">
+        <img :src="jewelry.color_code[jewelry.activeColorIndex].jewelry_img"
+        alt="jewelry image" />
+      </div>
 
-            <div class="color-options">
-                <span class="color-circle" style="background-color: #d9a679;"></span>
-                <span class="color-circle" style="background-color: #ccc;"></span>
-            </div>
+      <div class="color-options">
+        <span
+          class="color-circle"
+          v-for="(color_code, idx) in jewelry.color_code"
+          :key="idx"
+          :style="{ backgroundColor: color_code.color_name }"
+          @click="jewelry.activeColorIndex = idx"
+          :class="{ active:idx === jewelry.activeColorIndex }"
+        ></span>
+      </div>
 
-            <div class="product-name">
-                <a href="#">{{ jewelry.jewelry_name }}</a>
-            </div>
+      <div class="product-name">
+        <a href="#">{{ jewelry.jewelry_name }}</a>
+      </div>
 
-            <div class="product-price">
-                {{ Number(jewelry.jewelry_price).toLocaleString() }}₫
-            </div>
-        </div>
+      <div class="product-price">
+        {{ Number(jewelry.color_code[jewelry.activeColorIndex].jewelry_price).toLocaleString() }}₫
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -44,13 +55,25 @@ const fetchProduct = async () => {
     const data = await response.json();
     const productData = data.message;
 
-    productList.value = productData.map(jewelry => ({
-      jewelry_id: jewelry.jewelry_id,
-      jewelry_name: jewelry.jewelry_name,
-      jewelry_price: jewelry.jewelry_price,
-      jewelry_img: jewelry.jewelry_img,
-      jewelry_color: jewelry.color_id
-    }));
+    const groupProduct = {};
+    
+    productData.forEach(jewelry=>{
+        const key = jewelry.jewelry_name
+        if(!groupProduct[key]){
+            groupProduct[key] = {
+                jewelry_id: jewelry.jewelry_id,
+                jewelry_name: jewelry.jewelry_name,
+                activeColorIndex: 0,
+                color_code: []
+            }
+        }
+        groupProduct[key].color_code.push({
+            color_name: jewelry.color_name,
+            jewelry_img: jewelry.jewelry_img,
+            jewelry_price: jewelry.jewelry_price
+        });
+    });
+    productList.value = Object.values(groupProduct);
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -63,11 +86,11 @@ watch(() => props.sub_id, fetchProduct, { immediate: true });
 
 <style scoped>
 .products-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: flex-start;
-  margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: flex-start;
+    margin-top: 20px;
 }
 
 .product-card {
@@ -90,28 +113,6 @@ watch(() => props.sub_id, fetchProduct, { immediate: true });
     object-fit: cover;
 }
 
-.sale-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: #d21f3c;
-    color: white;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 3px;
-}
-
-.like-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 16px;
-    color: #999;
-    cursor: pointer;
-}
 
 .color-options {
     margin-top: 10px;
