@@ -54,7 +54,7 @@ select * from color_code;
 drop table color_code;
 
 insert into color_code (jewelry_id,color_name) values (1,'red');
-insert into color_code (jewelry_id,color_name) values (1,'black');
+insert into color_code (jewelry_id,color_name) values (2,'pink');
 
 create table sub_categories(
 	sub_id int primary key auto_increment,
@@ -76,7 +76,7 @@ create table jewelry(
     
     foreign key(sub_id) references sub_categories(sub_id)
 );
-insert into jewelry(jewelry_name,sub_id,jewelry_price) values('pandora bac',1,200000);
+insert into jewelry(jewelry_name,jewelry_img,sub_id,jewelry_price) values('pandora bac','./src/assets/image/vongbac.jpg',1,300000);
 insert into jewelry(jewelry_name,jewelry_img,sub_id,jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
 select * from jewelry;
 
@@ -129,5 +129,15 @@ select c.categories_name,
 join sub_categories s
 on s.categories_id=c.categories_id;
 -- ----------------------------------------
+-- search-------------------
+SELECT  j.jewelry_name,
+		j.jewelry_price,
+        color_code.color_name,
+        size.size_number
+FROM jewelry j
+JOIN color_code  ON color_code.jewelry_id = j.jewelry_id
+JOIN size ON size.jewelry_id = j.jewelry_id
+WHERE jewelry_name LIKE '%pandora bac%';
+
 
 
