@@ -8,16 +8,18 @@
         </div>
         <div class="header-icons">
           <div class="search-container">
-            <input
-              class="search-box"
-              type="text"
-              placeholder="Bạn cần tìm gì?"
-              v-model="jewelry_name"
-              @input="emitSearch"
-            />
-            <button class="search-button" @click.prevent="emitSearch">
-              <i class="fas fa-search"></i>
-            </button>
+            <form @submit.prevent="emitSearch">
+              <input
+                class="search-box"
+                type="text"
+                placeholder="Bạn cần tìm gì?"
+                v-model="jewelry_name"
+                @input="emitSearch"
+              />
+              <button class="search-button" >
+                <i class="fas fa-search"></i>
+              </button>
+            </form>
           </div>
           <div class="icons">
             <!-- User Dropdown -->
@@ -67,7 +69,7 @@ const selectCategory = (category) => {
   activeCategory.value = activeCategory.value === category ? null: category    //nếu mục đó đã được mở thì gán lại null
   emit('select-category',activeCategory.value) //phat ra su kien kem theo du lieu cua category  
 }
- const emitSearch = (jewelry_name) =>{
+ const emitSearch = () =>{    // đã khai báo biến trạng thái 
   emit('search-input',jewelry_name.value)
  }
 

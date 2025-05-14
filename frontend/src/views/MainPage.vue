@@ -1,8 +1,8 @@
 <template>
-    <UserHeader @select-category="handleCategorySelect"/>   <!--lang nghe su kien select-category--> 
+    <UserHeader @search-input="handleSearch" @select-category="handleCategorySelect"/>   <!--lang nghe su kien select-category--> 
     <MenuShow  @select-subcate = "handleSubcate" v-if="selectedCategory":category="selectedCategory"/>    <!--lưu trạng thái mục đã chọn--> 
     <ProductsList v-if="selectedSubcate":sub_id="selectedSubcate"/>
-    <SearchResult/>
+    <SearchResult v-if="selectProduct":jewelry_name="selectProduct"/>
 
 </template>
 
@@ -27,9 +27,11 @@ const handleSubcate = (sub_id) =>{
   selectedSubcate.value = sub_id
 }
 
-const search_input = ref(null);
-const hanldeSearch = (jewelry_name) =>{
-  selectProduct.value = jewelry_name
+const selectProduct = ref(null);
+const handleSearch = (jewelry_name) =>{
+  selectProduct.value = jewelry_name;
+  selectedCategory.value = null;
+  selectedSubcate.value = null;
 }
 </script>
 
