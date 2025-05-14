@@ -1,9 +1,8 @@
 create database jewelry;
 use jewelry;
-use books;
-select*from book;
 
-drop table user;
+drop database jewelry;
+
 create table user(
 	user_id int primary key auto_increment,
     user_password varchar(255),
@@ -13,6 +12,7 @@ create table user(
 	user_address int,
 	date_created date
 );
+select * from user;
 -- bỏ address lúc đk và sau khi đăng kí thì mới cho cập nhật địa chỉ và chỉ cập nhật vào record
 
 insert into user(user_name,user_email,address_id) value('tuitennhan','nhan9@gmail.com','3');
@@ -41,16 +41,20 @@ create table categories(
 	categories_id int primary key auto_increment,
     categories_name varchar(100)
 );
-insert into categories(categories_name) value('dây chuyền bạc');
+insert into categories(categories_name) value('daychuyen');
 select * from categories;
 create table color_code(
 	color_id int primary key auto_increment,
-    color_name varchar(12) unique
+    jewelry_id int,
+    color_name varchar(12) unique,
+    
+    foreign key(jewelry_id) references jewelry(jewelry_id)
 );
 select * from color_code;
 drop table color_code;
 
-insert into color_code (color_name) values ('blue');
+insert into color_code (jewelry_id,color_name) values (1,'red');
+insert into color_code (jewelry_id,color_name) values (1,'black');
 
 create table sub_categories(
 	sub_id int primary key auto_increment,
@@ -59,23 +63,21 @@ create table sub_categories(
     
     foreign key (categories_id) references categories(categories_id)
 );
-insert into sub_categories(categories_id,sub_name) value(3,'dây chuyền vàng');
+insert into sub_categories(categories_id,sub_name) value(1,'vong bac');
 select * from sub_categories;
 
 create table jewelry(
 	jewelry_id int primary key auto_increment,
     jewelry_name char(50),
     sub_id int,
-    color_id int,
     jewelry_price varchar(30),
     jewelry_decribe varchar(200),
     jewelry_img varchar(255) default 'default.jpg',
     
-    foreign key(sub_id) references sub_categories(sub_id),
-	foreign key(color_id) references color_code(color_id)
+    foreign key(sub_id) references sub_categories(sub_id)
 );
-insert into jewelry(jewelry_name,sub_id,color_id, jewelry_price) values('pandora bac',1,2,200000);
-insert into jewelry(jewelry_name,jewelry_img,sub_id,color_id, jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
+insert into jewelry(jewelry_name,sub_id,jewelry_price) values('pandora bac',1,200000);
+insert into jewelry(jewelry_name,jewelry_img,sub_id,jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
 select * from jewelry;
 
 create table cart(
@@ -99,6 +101,7 @@ create table size(
 insert into size(size_number,jewelry_id,quantity) value(20,1,5);
 -- ---------getJewById-----------------------------
 select j.jewelry_name,
+	   j.jewelry_id,
 	   j.jewelry_img,
 	   s.size_number,
        s.quantity
@@ -108,14 +111,14 @@ join size s on j.jewelry_id = s.jewelry_id;
 
 -- getJewBysubCategory------------------------
 SELECT 
-	s.sub_name,
     j.jewelry_name,
     j.jewelry_img,
     j.jewelry_price,
     c.color_name,
-    s.sub_name
+    s.sub_name,
+    s.sub_id
 FROM jewelry j
-JOIN color_code c ON j.color_id = c.color_id
+JOIN color_code c ON j.jewelry_id = c.jewelry_id
 JOIN sub_categories s ON j.sub_id = s.sub_id;
 -- ---------------------------------------------------
 
