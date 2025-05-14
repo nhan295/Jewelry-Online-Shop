@@ -1,6 +1,6 @@
 const db = require('../config/db')
 
-const jewveryModel = {
+const jewelryModel = {
 
     getJewByCategory: (category) =>{ //Loc chi muc con thuoc categories
         return db('categories')
@@ -17,7 +17,7 @@ const jewveryModel = {
                 'jewelry.jewelry_img',
                 'color_code.color_name')
         .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
-        .innerJoin('color_code', 'color_code.color_id', 'jewelry.color_id')
+        .innerJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
         .where('sub_categories.sub_id', `${sub_id}`);
 },
 
@@ -32,17 +32,19 @@ const jewveryModel = {
         
 
 },
-    searchJewByName: (name) =>{
+    searchJewByName: (jewelry_name) =>{
         return db('jewelry')
          .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
-                'color_code.color_name')
-        .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
-        .innerJoin('color_code', 'color_code.color_id', 'jewelry.color_id')
-        .where('jewelry.jewelry_name',`${name}`)
+                'color_code.color_name',
+                'size.size_number', 
+            )
+        .leftJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
+        .leftJoin('size','size.jewelry_id','jewelry.jewelry_id')
+        .where('jewelry_name','like',`%${jewelry_name}%`)
         .limit(4)
     }
 
 }
 
-module.exports = jewveryModel
+module.exports = jewelryModel

@@ -12,8 +12,10 @@
               class="search-box"
               type="text"
               placeholder="Bạn cần tìm gì?"
+              v-model="jewelry_name"
+              @input="emitSearch"
             />
-            <button class="search-button">
+            <button class="search-button" @click.prevent="emitSearch">
               <i class="fas fa-search"></i>
             </button>
           </div>
@@ -57,13 +59,17 @@ import {ref} from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const jewelry_name = ref('');
 
 const activeCategory = ref(null);  //quan li trang thai mui ten
-const emit = defineEmits(['select-category']);  //khai bao emit cho su kien select-category
+const emit = defineEmits(['select-category','search-input']);  //khai bao emit cho su kien select-category
 const selectCategory = (category) => {
   activeCategory.value = activeCategory.value === category ? null: category    //nếu mục đó đã được mở thì gán lại null
   emit('select-category',activeCategory.value) //phat ra su kien kem theo du lieu cua category  
 }
+ const emitSearch = (jewelry_name) =>{
+  emit('search-input',jewelry_name.value)
+ }
 
 const logout = async() =>{
   const response = await fetch("http://localhost:3000/api/v1/user/logout",{

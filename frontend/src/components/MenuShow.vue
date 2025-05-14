@@ -50,7 +50,7 @@ const fetchSubCate = async () => {
 const emit = defineEmits(['select-subcate']);  
 const selectedSubId = (sub_id) => {
   emit('select-subcate',sub_id) 
-  showSubCate.value = false;
+  showSubCate.value = false;   //Ẩn danh sách sub_categories
 }
 
 

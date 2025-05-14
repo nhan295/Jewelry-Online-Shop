@@ -29,8 +29,8 @@ const getJewById = async(req,res)=>{
 
 const searchJewByName = async(req,res) =>{
     try{
-        const name = req.params.name;
-        const jewelry = await jewelryModel.searchJewByName(name)
+        const jewelry_name = req.params.jewelry_name;
+        const jewelry = await jewelryModel.searchJewByName(jewelry_name)
         res.json({jewelry})
     }
     catch(err){

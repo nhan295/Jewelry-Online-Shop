@@ -8,7 +8,7 @@ module.exports.setup = (app)=>{
 
     router.get('/sub_category/:sub_id', jewelryController.getJewBySubCategory);
     router.get('/category/:category', jewelryController.getJewByCategory);
-    router.get('/search/:name', jewelryController.searchJewByName);
+    router.get('/search/:jewelry_name', jewelryController.searchJewByName);
     router.get('/id/:jewelry_id', jewelryController.getJewById);
 
 
