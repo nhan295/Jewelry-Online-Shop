@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="show_result">
     <h1 style="color: black;">Kết quả tìm kiếm cho: "{{ jewelry_name }}"</h1>
 
     <div v-if="loading">Đang tải...</div>
@@ -26,7 +26,9 @@ const loading = ref(true);
 const error = ref(null);
 const searchList = ref([]);
 
+
 const fetchProduct = async() =>{
+
     try{
         const response = await fetch(`http://localhost:3000/api/v1/jew/search/${props.jewelry_name}`);
         if (!response.ok){

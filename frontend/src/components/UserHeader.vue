@@ -4,7 +4,7 @@
     <div class="header">
       <div class="header-top">
         <div class="logo-hot">
-          <span class="logo">XIES XIES</span>
+          <router-link to="/userpage" class="logo">XIES XIES</router-link>
         </div>
         <div class="header-icons">
           <div class="search-container">
@@ -14,9 +14,9 @@
                 type="text"
                 placeholder="Bạn cần tìm gì?"
                 v-model="jewelry_name"
-                @input="emitSearch"
+                
               />
-              <button class="search-button" >
+              <button class="search-button" type="submit">
                 <i class="fas fa-search"></i>
               </button>
             </form>
@@ -110,12 +110,14 @@ const logout = async() =>{
   display: flex;
   align-items: center;
   gap: 8px;
+
 }
 
 .logo {
   font-size: 26px;
   font-weight: bold;
   color: white;
+  text-decoration: none;
 }
 
 /* Search và icons bên phải */
