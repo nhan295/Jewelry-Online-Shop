@@ -21,14 +21,19 @@ const jewelryModel = {
         .where('sub_categories.sub_id', `${sub_id}`);
 },
 
-    getJewById: (jewelry_id) =>{    // Xem chi tiet san pham
+    getJewById: (jewelry_id,color_id) =>{    // Xem chi tiet san pham
         return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_img',
+                'jewelry.jewelry_price',
+                'color_code.color_name',
                 'size.size_number',
                 'size.quantity')
-        .innerJoin('size','jewelry.jewelry_id','size.jewelry_id')
-        .where('jewelry.jewelry_id', `${jewelry_id}`)
+        .leftJoin('size','jewelry.jewelry_id','size.jewelry_id')
+        .leftJoin('color_code','color_code.jewelry_id','jewelry.jewelry_id')
+        .where({'jewelry.jewelry_id':jewelry_id,
+                'color_code.color_id':color_id
+    })
         
 
 },

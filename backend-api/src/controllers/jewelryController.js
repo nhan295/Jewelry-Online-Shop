@@ -18,9 +18,9 @@ const getJewByCategory = async(req,res) =>{
     }
 };
 
-const getJewById = async(req,res)=>{
-    const{jewelry_id} = req.params;
-    const detail = await jewelryModel.getJewById(jewelry_id)
+const getJewById = async(req,res)=>{   // trả về sp ứng màu dã được chọn
+    const{jewelry_id,color_id} = req.params;
+    const detail = await jewelryModel.getJewById(jewelry_id,color_id)
 
     if(detail){
         res.json({message: detail})
