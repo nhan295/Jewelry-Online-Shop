@@ -39,9 +39,6 @@ const searchJewByName = async(req,res) =>{
 }
 
 
-
-
-
 module.exports = {
     getJewBySubCategory,
     getJewByCategory,

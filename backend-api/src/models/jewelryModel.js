@@ -37,7 +37,8 @@ const jewelryModel = {
          .select('jewelry.jewelry_name',
                 'jewelry.jewelry_price', 
                 'color_code.color_name',
-                'size.size_number', 
+                'size.size_number',
+                'jewelry.jewelry_img'
             )
         .leftJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
         .leftJoin('size','size.jewelry_id','jewelry.jewelry_id')
