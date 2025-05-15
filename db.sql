@@ -84,9 +84,11 @@ create table cart(
 	cart_id int primary key auto_increment,
     user_id int,
     jewlvery_id int,
+    color_id int,
     quantity int,
     
     foreign key(user_id) references user(user_id),
+    foreign key(color_id) references color_code(color_id),
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
 
@@ -111,10 +113,11 @@ join size s on j.jewelry_id = s.jewelry_id;
 
 -- getJewBysubCategory------------------------
 SELECT 
+	j.jewelry_id,
     j.jewelry_name,
     j.jewelry_img,
     j.jewelry_price,
-    c.color_name,
+    c.color_id,
     s.sub_name,
     s.sub_id
 FROM jewelry j
@@ -138,6 +141,32 @@ FROM jewelry j
 JOIN color_code  ON color_code.jewelry_id = j.jewelry_id
 JOIN size ON size.jewelry_id = j.jewelry_id
 WHERE jewelry_name LIKE '%pandora bac%';
+
+-- get jewelry detail-------------------------
+SELECT 
+    jewelry.jewelry_name,
+    jewelry.jewelry_img,
+    jewelry.jewelry_price,
+    color_code.color_name,
+    size.size_number,
+    size.quantity
+FROM jewelry
+left JOIN size ON jewelry.jewelry_id = size.jewelry_id
+left JOIN color_code ON color_code.jewelry_id = jewelry.jewelry_id
+WHERE jewelry.jewelry_id = 1 AND color_code.color_id = 4;
+
+SELECT 
+	j.jewelry_id,
+    j.jewelry_name,
+    j.jewelry_img,
+    j.jewelry_price,
+    c.color_id,
+    s.sub_name,
+    s.sub_id
+FROM jewelry j
+JOIN color_code c ON j.jewelry_id = c.jewelry_id
+JOIN sub_categories s ON j.sub_id = s.sub_id;
+
 
 
 
