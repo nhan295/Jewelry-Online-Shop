@@ -7,7 +7,7 @@ module.exports.setup = (app) =>{
     app.use('/api/v1/user',router)
 
     router.get('/',userController.getUserData)
-    router.post('/register',userController.register)
+    router.post('/register',userController.register) // req.body
     router.post('/login',userController.login)
     router.post('/logout',userController.logout)
 
