@@ -10,58 +10,66 @@ const cartModel = {
         .where({user_id:user_id,
                 jewelry_id:jewelry_id,
                 color_id: color_id,
-                size_id: size_id})
+                size_id: size_id,
+        })
+        .first();  //trả về 1 object thay vì 1 mảng
     },
 
-    addCart: async(user_id,jewelry_id,quantity,color_id,size_id)=>{   //neu da co size,color,jewelry_id thì tạo bản ghi mới
-        const existingItem = await cartModel.getCartItem(user_id,jewelry_id)
+    addCart: async(user_id,jewelry_id,color_id,size_id,quantity)=>{   //neu da co size,color,jewelry_id thì tạo bản ghi mới
+        const existingItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
         if(existingItem){
-            return cartModel.updateCartQuantity(user_id,jewelry_id)
+            return cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity)
         }else{
             return db('cart')
             .insert({
                 user_id: user_id,
                 jewelry_id: jewelry_id,
-                quantity: quantity,
                 color_id: color_id,
-                size_id: size_id
+                size_id: size_id,
+                quantity: quantity
             })
         }
     },
 
-    updateCartQuantity: async(user_id,jewelry_id,quantity)=>{
-        const existingItem = await cartModel.getCartItem(user_id,jewelry_id)
+    updateCartQuantity: async(user_id,jewelry_id,size_id,color_id,add_quantity)=>{
+        const existingItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
         if(!existingItem){
             throw new Error ('Can found item in cart')
         }
-        const newQuantity = quantity + existingItem.quantity
+        const newQuantity = add_quantity + existingItem.quantity
         return db('cart')
         .update({
-            quantity: newQuantity
+            quantity: newQuantity                                                                                               
         })
         .where({jewelry_id: jewelry_id,
-                user_id: user_id
+                user_id: user_id,
+                size_id: size_id,
+                color_id: color_id
         })
     },
 
-    updateCart: (user_id,jewelry_id,size_id,color_id) =>{
+    updateCart: async(user_id,jewelry_id,old_color,old_size,new_color,new_size,quantity) =>{
         return db('cart')
             .update({
+                color_id: new_color,
+                size_id: new_size,
                 quantity: quantity,
-                jewelry_id: jewelry_id,
-                color_id: color_id,
-                size_id: size_id,
-                user_id: user_id
+
             })
             .where({jewelry_id: jewelry_id,
-                    user_id: user_id
+                    user_id: user_id,
+                    color_id: old_color,
+                    size_id: old_size
             })
     },
 
-    deleteCartItem: (user_id,jewelry_id)=>{
+    deleteCartItem: (user_id,jewelry_id,color_id,size_id)=>{
         return db('cart')
+        .del()
         .where({user_id: user_id,
-                jewelry_id: jewelry_id
+                jewelry_id: jewelry_id,
+                color_id: color_id,
+                size_id: size_id
         })
     },
     

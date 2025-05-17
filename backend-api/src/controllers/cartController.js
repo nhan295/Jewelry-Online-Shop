@@ -22,14 +22,14 @@ const getCartData = async(req,res) =>{
 
 const addCart = async(req,res) =>{
     try{
-        const {user_id,jewelry_id,quantity,color_id,size_id} = req.body;
+        const {user_id,jewelry_id,color_id,size_id,quantity} = req.body;
         const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
 
         if(existCartItem){
-            await cartModel.updateCartQuantity(user_id,jewelry_id);
+            await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
             return res.status(200).json({message: 'Updated quantity item!'})
         }
-        await cartModel.addCart(user_id,jewelry_id,quantity,color_id,size_id);
+        await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity);
         return res.status(200).json({message: 'Add cart successfully!'})
     }
     catch(error){
@@ -40,10 +40,10 @@ const addCart = async(req,res) =>{
 
 const deleteCartItem = async(req,res) =>{
     try{
-        const {user_id,jewelry_id} = req.body
+        const {user_id,jewelry_id,color_id,size_id} = req.body
         const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
         if(existCartItem){
-            await cartModel.deleteCartItem(user_id,jewelry_id);
+            await cartModel.deleteCartItem(user_id,jewelry_id,color_id,size_id);
             return res.status(200).json({message: 'Deleted cart item successfully'})
         }else{
             return res.status(400).json({message: 'Item not found'})
@@ -57,10 +57,10 @@ const deleteCartItem = async(req,res) =>{
 
 const updateCart = async(req, res) =>{
     try{
-        const {user_id,jewelry_id,size_id,color_id} = req.body
-        const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
+        const {user_id,jewelry_id,old_color,old_size,new_color,new_size,quantity} = req.body
+        const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,old_color,old_size)
         if(existCartItem){
-            await cartModel.updateCart(user_id,jewelry_id,color_id,size_id)
+            await cartModel.updateCart(user_id,jewelry_id,old_color,old_size,new_color,new_size,quantity)
             return res.status(200).json({message: 'Updated cart item'})
         }
         else{
