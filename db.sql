@@ -83,14 +83,18 @@ select * from jewelry;
 create table cart(
 	cart_id int primary key auto_increment,
     user_id int,
-    jewlvery_id int,
+    jewelry_id int,
     color_id int,
+    size_id int,
     quantity int,
     
     foreign key(user_id) references user(user_id),
     foreign key(color_id) references color_code(color_id),
+    foreign key(size_id) references size(size_id),
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
+select * from cart;
+insert into cart(user_id,jewelry_id,color_id,size_id,quantity) values(1,2,1,1,2);
 
 create table size(
 	size_id int primary key auto_increment,
@@ -100,6 +104,7 @@ create table size(
     
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
+insert into size(size_number,jewelry_id,quantity) values(1,1,1);
 insert into size(size_number,jewelry_id,quantity) value(20,1,5);
 -- ---------getJewById-----------------------------
 select j.jewelry_name,
@@ -166,6 +171,13 @@ SELECT
 FROM jewelry j
 JOIN color_code c ON j.jewelry_id = c.jewelry_id
 JOIN sub_categories s ON j.sub_id = s.sub_id;
+
+-- ------------------------------
+INSERT INTO cart (jewelry_id, quantity, color_id)
+VALUES (1, 1, 1);
+
+select* from cart;
+
 
 
 
