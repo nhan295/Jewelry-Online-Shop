@@ -9,7 +9,7 @@
       <div v-if="searchList.length" class="grid-container">
         <div v-for="(jewelry, item) in searchList" :key="item" class="product-card">
           <div class="product-image">
-            <img :src="jewelry.color_code[jewelry.activeColorIndex].jewelry_img" alt="ảnh"/>
+            <img :src="jewelry.color_code[jewelry.activeColorIndex].image" alt="ảnh"/>
           </div>
 
           <div class="color-options">
@@ -70,7 +70,7 @@ const fetchProduct = async() =>{
           }
           groupSearchProduct[key].color_code.push({
             color_name: jewelry.color_name,
-            jewelry_img: jewelry.jewelry_img,
+            image: jewelry.image,
             jewelry_price: jewelry.jewelry_price
           })
         })
