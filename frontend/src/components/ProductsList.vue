@@ -10,7 +10,7 @@
         alt="jewelry image" />
       </div> <!--hiển thị ảnh của màu hiện tại-->
 
-      <div class="color-options">
+      <div class="color-option  s">
         <span
           class="color-circle"
           v-for="(color_code, idx) in jewelry.color_code"
@@ -22,7 +22,13 @@
       </div>
 
       <div class="product-name">
-        <a href="#">{{ jewelry.jewelry_name }}</a>
+        <a 
+          href="#"
+          @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.activeColorIndex].color_id)"
+        >
+          {{ jewelry.jewelry_name }}
+        </a>
+
       </div>
 
       <div class="product-price">
@@ -58,7 +64,7 @@ const fetchProduct = async () => {
     const groupProduct = {};
     
     productData.forEach(jewelry=>{
-        const key = jewelry.jewelry_name   //gộp sp có cùng tên
+        const key = jewelry.jewelry_id   
         if(!groupProduct[key]){
             groupProduct[key] = {
                 jewelry_id: jewelry.jewelry_id,
@@ -69,17 +75,28 @@ const fetchProduct = async () => {
         }
         groupProduct[key].color_code.push({   //tách sp theo từng mã màu mỗi mã theo thứ tự activeColorIndex
             color_name: jewelry.color_name,
+            color_id: jewelry.color_id,
             jewelry_img: jewelry.jewelry_img,
             jewelry_price: jewelry.jewelry_price
         });
     });
     productList.value = Object.values(groupProduct);
+    console.log('productData:', productData);
+
   } catch (err) {
     error.value = err.message;
   } finally {
     loading.value = false;
   }
 };
+
+const emits = defineEmits(['select-product'])
+
+const selectedProduct = (jewelry_id,color_id)=>{   
+  emits('select-product',{jewelry_id,color_id})   
+
+  console.log('Clicked:', { jewelry_id, color_id });
+}
 
 watch(() => props.sub_id, fetchProduct, { immediate: true });
 </script>

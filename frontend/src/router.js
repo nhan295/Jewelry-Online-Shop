@@ -7,12 +7,14 @@ import BrowsePage from './views/BrowsePage.vue';
 import SearchResult from './components/SearchResult.vue';
 
 
+
 const routes = [
     {path: '/index', component: index},
     {path: '/', component: BrowsePage},
     {path: '/userpage', component: MainPage},
     {path: '/profile', component: ProfilePage},
-    {path: '/searchproduct',component: SearchResult}
+    {path: '/searchproduct',component: SearchResult},
+
 
 ];
 

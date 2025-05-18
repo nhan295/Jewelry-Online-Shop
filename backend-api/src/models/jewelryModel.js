@@ -12,10 +12,12 @@ const jewelryModel = {
     getJewBySubCategory: (sub_id) => { // Loc san pham tu sub_categories
     return db('jewelry')
         .select('jewelry.jewelry_name',
+                'jewelry.jewelry_id',
                 'sub_categories.sub_name',
                 'jewelry.jewelry_price', 
                 'jewelry.jewelry_img',
-                'color_code.color_name')
+                'color_code.color_name',
+                'color_code.color_id')
         .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
         .innerJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
         .where('sub_categories.sub_id', `${sub_id}`);
@@ -24,6 +26,7 @@ const jewelryModel = {
     getJewById: (jewelry_id,color_id) =>{    // Xem chi tiet san pham
         return db('jewelry')
         .select('jewelry.jewelry_name',
+                'jewelry.jewelry_id',
                 'jewelry.jewelry_img',
                 'jewelry.jewelry_price',
                 'color_code.color_name',

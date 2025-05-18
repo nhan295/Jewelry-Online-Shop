@@ -1,3 +1,5 @@
+<!-- same productList -->
+
 <template>
   <div class="show-result">
     <div v-if="loading">Đang tải...</div>
@@ -53,7 +55,7 @@ const fetchProduct = async() =>{
             throw new Error('Faile to load search result');
         }
         const data = await response.json();
-        const List = data.jewelry;
+        const List = data.jewelry;  //dl tra ve la mang 
         const groupSearchProduct = {};
 
         List.forEach(jewelry =>{
