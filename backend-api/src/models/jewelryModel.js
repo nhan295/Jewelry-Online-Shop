@@ -38,8 +38,11 @@ const jewelryModel = {
                 'size.size_number',
                 'size.quantity')
         .innerJoin('size','jewelry.jewelry_id','size.jewelry_id')
-        .innerJoin('jewelry_img','jewelry_img.jewelry_id','jewelry.jewelry_id')
         .innerJoin('color_code','color_code.jewelry_id','jewelry.jewelry_id')
+        .leftJoin('jewelry_img',function(){
+            this.on('jewelry_img.jewelry_id','=','jewelry.jewelry_id')
+            .andOn('jewelry_img.color_id','=','color_code.color_id')
+        })
         .where({'jewelry.jewelry_id':jewelry_id,
                 'color_code.color_id':color_id
     })
