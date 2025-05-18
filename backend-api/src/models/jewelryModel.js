@@ -15,29 +15,35 @@ const jewelryModel = {
                 'jewelry.jewelry_id',
                 'sub_categories.sub_name',
                 'jewelry.jewelry_price', 
-                'jewelry.jewelry_img',
+                'jewelry_img.image',
                 'color_code.color_name',
                 'color_code.color_id')
         .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
         .innerJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
-        .where('sub_categories.sub_id', `${sub_id}`);
+        .leftJoin('jewelry_img',function(){
+            this.on('jewelry_img.jewelry_id','=','jewelry.jewelry_id')
+            .andOn('jewelry_img.color_id','=','color_code.color_id')
+        })
+        .where('sub_categories.sub_id', `${sub_id}`)
+        .groupBy('jewelry.jewelry_id', 'sub_categories.sub_name','color_code.color_id');
 },
 
     getJewById: (jewelry_id,color_id) =>{    // Xem chi tiet san pham
         return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_id',
-                'jewelry.jewelry_img',
+                'jewelry_img.image',
                 'jewelry.jewelry_price',
                 'color_code.color_name',
                 'size.size_number',
                 'size.quantity')
-        .leftJoin('size','jewelry.jewelry_id','size.jewelry_id')
-        .leftJoin('color_code','color_code.jewelry_id','jewelry.jewelry_id')
+        .innerJoin('size','jewelry.jewelry_id','size.jewelry_id')
+        .innerJoin('jewelry_img','jewelry_img.jewelry_id','jewelry.jewelry_id')
+        .innerJoin('color_code','color_code.jewelry_id','jewelry.jewelry_id')
         .where({'jewelry.jewelry_id':jewelry_id,
                 'color_code.color_id':color_id
     })
-        
+        .groupBy('jewelry.jewelry_id')
 
 },
     searchJewByName: (jewelry_name) =>{
@@ -46,9 +52,10 @@ const jewelryModel = {
                 'jewelry.jewelry_price', 
                 'color_code.color_name',
                 'size.size_number',
-                'jewelry.jewelry_img'
+                'jewelry_img.image'
             )
         .leftJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
+        .leftJoin('jewelry_img','jewelry_img.jewelry_id','jewelry.jewelry_id')
         .leftJoin('size','size.jewelry_id','jewelry.jewelry_id')
         .where('jewelry_name','like',`%${jewelry_name}%`)
         .limit(4)

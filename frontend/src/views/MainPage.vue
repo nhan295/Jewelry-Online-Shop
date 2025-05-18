@@ -5,7 +5,8 @@
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
     <ProductDetail v-if="selectedProduct"
       :jewelry_id="Number(selectedProduct.jewelry_id)"
-      :color_id="Number(selectedProduct.color_id)"/>
+      :color_id="Number(selectedProduct.color_id)"
+      :color_code="selectedProduct.color_code"/>
 
 </template>
 
@@ -41,10 +42,11 @@ const handleSearch = (jewelry_name) =>{
 };
 
 const selectedProduct = ref(null);
-const handleProductDetail = ({jewelry_id, color_id})=>{  //nhận 1 object rồi destructure
+const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 object rồi destructure
   selectedProduct.value = {
     jewelry_id,
-    color_id
+    color_id,
+    color_code
   }
   selectedCategory.value = null;
   selectedSubcate.value = null;

@@ -6,7 +6,7 @@
       :key="index"
     >  <!--sản phẩm đã gộp theo màu -->
       <div class="product-image">
-        <img :src="jewelry.color_code[jewelry.activeColorIndex].jewelry_img"
+        <img :src="jewelry.color_code[jewelry.activeColorIndex].image"
         alt="jewelry image" />
       </div> <!--hiển thị ảnh của màu hiện tại-->
 
@@ -76,7 +76,7 @@ const fetchProduct = async () => {
         groupProduct[key].color_code.push({   //tách sp theo từng mã màu mỗi mã theo thứ tự activeColorIndex
             color_name: jewelry.color_name,
             color_id: jewelry.color_id,
-            jewelry_img: jewelry.jewelry_img,
+            image: jewelry.image,
             jewelry_price: jewelry.jewelry_price
         });
     });

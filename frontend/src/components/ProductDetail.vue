@@ -26,7 +26,8 @@ const productDetail = ref([]);
 
 const props =  defineProps({
     jewelry_id: Number,
-    color_id: Number
+    color_id: Number,
+    color_code: Array
 })
 
 const fetchProductDetail = async()=>{
