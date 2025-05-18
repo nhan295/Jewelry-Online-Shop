@@ -1,6 +1,7 @@
 create database jewelry;
 use jewelry;
 
+drop database jewelry;
 
 create table user(
 	user_id int primary key auto_increment,
@@ -42,18 +43,6 @@ create table categories(
 );
 insert into categories(categories_name) value('daychuyen');
 select * from categories;
-create table color_code(
-	color_id int primary key auto_increment,
-    jewelry_id int,
-    color_name varchar(12) unique,
-    
-    foreign key(jewelry_id) references jewelry(jewelry_id)
-);
-select * from color_code;
-drop table color_code;
-
-insert into color_code (jewelry_id,color_name) values (1,'red');
-insert into color_code (jewelry_id,color_name) values (2,'pink');
 
 create table sub_categories(
 	sub_id int primary key auto_increment,
@@ -65,19 +54,58 @@ create table sub_categories(
 insert into sub_categories(categories_id,sub_name) value(1,'vong bac');
 select * from sub_categories;
 
+
+
+insert into color_code (jewelry_id,color_name) values (1,'red');
+insert into color_code (jewelry_id,color_name) values (2,'pink');
+
+
 create table jewelry(
 	jewelry_id int primary key auto_increment,
     jewelry_name char(50),
     sub_id int,
     jewelry_price varchar(30),
     jewelry_decribe varchar(200),
-    jewelry_img varchar(255) default 'default.jpg',
     
     foreign key(sub_id) references sub_categories(sub_id)
 );
-insert into jewelry(jewelry_name,jewelry_img,sub_id,jewelry_price) values('pandora bac','./src/assets/image/vongbac.jpg',1,300000);
-insert into jewelry(jewelry_name,jewelry_img,sub_id,jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
+insert into jewelry(jewelry_name,sub_id,jewelry_price) values('pandora bac',1,300000);
+insert into jewelry(jewelry_name,sub_id,jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
 select * from jewelry;
+
+create table color_code(
+	color_id int primary key auto_increment,
+    jewelry_id int,
+    color_name varchar(12) unique,
+    
+    foreign key(jewelry_id) references jewelry(jewelry_id)
+);
+select * from color_code;
+drop table color_code;
+insert into color_code(jewelry_id,color_name) values(1,'red');
+create table size(
+	size_id int primary key auto_increment,
+    size_number int unique,
+    jewelry_id int,
+    quantity int,
+    
+    foreign key(jewelry_id) references jewelry(jewelry_id)
+);
+select * from size;
+insert into size(size_number,jewelry_id,quantity) values(1,1,1);
+insert into size(size_number,jewelry_id,quantity) value(20,1,5);
+
+create table jewelry_img(
+	img_id int primary key auto_increment,
+    image varchar(255) default 'default.jpg',
+    color_id int,
+    jewelry_id int,
+    
+    foreign key (color_id) references color_code(color_id),
+    foreign key (jewelry_id) references jewelry(jewelry_id)
+
+);
+insert into jewelry_img(image,color_id,jewelry_id) values('./src/assets/image/vongbac.jpg',1,1)
 
 create table cart(
 	cart_id int primary key auto_increment,
@@ -94,21 +122,8 @@ create table cart(
 );
 select * from cart;
 TRUNCATE TABLE cart;
-
-
 insert into cart(user_id,jewelry_id,color_id,size_id,quantity) values(1,2,1,1,2);
 
-create table size(
-	size_id int primary key auto_increment,
-    size_number int unique,
-    jewelry_id int,
-    quantity int,
-    
-    foreign key(jewelry_id) references jewelry(jewelry_id)
-);
-select * from size;
-insert into size(size_number,jewelry_id,quantity) values(1,1,1);
-insert into size(size_number,jewelry_id,quantity) value(20,1,5);
 -- ---------getJewById-----------------------------
 select j.jewelry_name,
 	   j.jewelry_id,
