@@ -10,7 +10,7 @@
         alt="jewelry image" />
       </div> <!--hiển thị ảnh của màu hiện tại-->
 
-      <div class="color-option  s">
+      <div class="color-options">
         <span
           class="color-circle"
           v-for="(color_code, idx) in jewelry.color_code"

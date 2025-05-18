@@ -50,7 +50,6 @@ const fetchProductDetail = async()=>{
                 jewelry_price: jewelry.jewelry_price,
                 color_name: jewelry.color_name
         }
-       
     }
    
     catch(err){
@@ -60,7 +59,7 @@ const fetchProductDetail = async()=>{
         loading.value = false
     }
 }
-
+const emit = defineEmits(['update:color_id']) 
 const emitColorChange  = (color_id)=>{
   if(color_id !== props.color_id)   //neu mau bam vao khac mau hien tai
     emit('update:color_id',color_id)

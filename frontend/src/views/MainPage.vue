@@ -4,10 +4,10 @@
     <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
     <ProductDetail v-if="selectedProduct"
-      :jewelry_id="Number(selectedProduct.jewelry_id)"
-      :color_id="Number(selectedProduct.color_id)"
+      :jewelry_id="selectedProduct.jewelry_id"
+      v-model:color_id="selectedProduct.color_id"  
       :color_code="selectedProduct.color_code"/>
-
+ <!-- v-model để nhận ra sự thay đổi của props(color_id) -->
 </template>
 
 <script setup>
@@ -39,6 +39,7 @@ const handleSearch = (jewelry_name) =>{
   searchProduct.value = jewelry_name;
   selectedCategory.value = null;
   selectedSubcate.value = null;
+  selectedProduct.value = null
 };
 
 const selectedProduct = ref(null);
