@@ -1,28 +1,29 @@
 <template>
-        <div class="product-image">
-    
-      </div> 
-      <div class="product-name">
-         <div v-for="(jewelry, index) in productDetail" :key="jewelry.jewelry_id">
-      <a href="#" >{{ jewelry.jewelry_name }}</a>
+  <div class="product-name" v-if="productDetail">
+    <img :src="productDetail.image" alt="">
+   <!--chỉ hiển thị khi dữ liệu sản phẩm đã được tải xong -->
+      <a href="#">{{ productDetail.jewelry_name }}</a>
       <div class="color-options">
-        <span
-          class="color-circle"
-          :style="{ backgroundColor: jewelry.color_name }"    
-        ></span>  <!--lấy màu theo index cập nhật vào activeColorIndex-->
+        <span v-for="(color,index) in props.color_code"
+        :key="index"
+        class="color-circle"
+        :style="{backgroundColor: color.color_name}"
+        @click="emitColorChange(color.color_id)"
+        :class="{active: color.color_id===props.color_id}"
+        >
+        </span>
       </div>
-      <h2>{{ jewelry.jewelry_price }}</h2>
-      
-    </div>
-      </div>
+      <h3>{{ Number(productDetail.jewelry_price).toLocaleString() }}</h3>
+   
+  </div>
 </template>
-
 
 <script setup>
 import {ref,onMounted,watch} from 'vue';
-const loading = ref([true]);
-const error = ref([null]);
-const productDetail = ref([]);
+
+const loading = ref(true);
+const error = ref(null);
+const productDetail = ref(null);
 
 const props =  defineProps({
     jewelry_id: Number,
@@ -41,18 +42,15 @@ const fetchProductDetail = async()=>{
         console.log('Props nhận được:', props.jewelry_id, props.color_id);
 
         const data = await response.json();
-        const newDetail = data.message;
+        const jewelry = data.message[0];   //??
         
-        const newDetailList = newDetail.map((jewelry)=>{
-            return{
+        productDetail.value = {
                 jewelry_name: jewelry.jewelry_name,
-                jewelry_img: jewelry.jewelry_img,
+                image: jewelry.image,
                 jewelry_price: jewelry.jewelry_price,
                 color_name: jewelry.color_name
-            }
-        })
-        console.log(newDetail)
-        productDetail.value = newDetailList
+        }
+       
     }
    
     catch(err){
@@ -61,6 +59,11 @@ const fetchProductDetail = async()=>{
     finally{
         loading.value = false
     }
+}
+
+const emitColorChange  = (color_id)=>{
+  if(color_id !== props.color_id)   //neu mau bam vao khac mau hien tai
+    emit('update:color_id',color_id)
 }
 onMounted(fetchProductDetail);
 watch(()=> [props.jewelry_id,props.color_id], ()=>{
@@ -108,6 +111,16 @@ watch(()=> [props.jewelry_id,props.color_id], ()=>{
   border-radius: 50%;
   border: 1px solid #ccc;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-circle:hover {
+  transform: scale(1.1);
+}
+
+.color-circle.active {
+  border: 2px solid #6a1b9a;
+  box-shadow: 0 0 4px #6a1b9a;
 }
 
 h2 {
@@ -115,7 +128,4 @@ h2 {
   color: #000;
   margin-top: 10px;
 }
-
-
-
 </style>

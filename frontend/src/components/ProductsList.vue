@@ -24,7 +24,7 @@
       <div class="product-name">
         <a 
           href="#"
-          @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.activeColorIndex].color_id)"
+          @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.activeColorIndex].color_id,jewelry.color_code)"
         >
           {{ jewelry.jewelry_name }}
         </a>
@@ -92,10 +92,10 @@ const fetchProduct = async () => {
 
 const emits = defineEmits(['select-product'])
 
-const selectedProduct = (jewelry_id,color_id)=>{   
-  emits('select-product',{jewelry_id,color_id})   
+const selectedProduct = (jewelry_id,color_id,color_code)=>{   
+  emits('select-product',{jewelry_id,color_id,color_code})   
 
-  console.log('Clicked:', { jewelry_id, color_id });
+  console.log('Clicked:', { jewelry_id, color_id,color_code});
 }
 
 watch(() => props.sub_id, fetchProduct, { immediate: true });
