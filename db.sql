@@ -1,7 +1,6 @@
 create database jewelry;
 use jewelry;
 
-drop database jewelry;
 
 create table user(
 	user_id int primary key auto_increment,
@@ -94,6 +93,9 @@ create table cart(
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
 select * from cart;
+TRUNCATE TABLE cart;
+
+
 insert into cart(user_id,jewelry_id,color_id,size_id,quantity) values(1,2,1,1,2);
 
 create table size(
@@ -104,6 +106,7 @@ create table size(
     
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
+select * from size;
 insert into size(size_number,jewelry_id,quantity) values(1,1,1);
 insert into size(size_number,jewelry_id,quantity) value(20,1,5);
 -- ---------getJewById-----------------------------
