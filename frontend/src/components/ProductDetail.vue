@@ -9,7 +9,7 @@
       <div class="product-info">
       <h1 class="product-name">{{ productDetail.jewelry_name }}</h1>
 
-      <h3 class="product-price">{{ Number(productDetail.jewelry_price).toLocaleString() }}₫</h3>
+      <span class="product-price">{{ Number(productDetail.jewelry_price).toLocaleString() }}₫</span>
 
       <!-- COLORS -->
       <div class="color-options">
@@ -119,18 +119,21 @@ watch(()=> [props.jewelry_id,props.color_id], ()=>{
   height: auto;
   border-radius: 8px;
   object-fit: cover;
+  
 }
 
 .product-info {
   flex: 1;
   display: flex;
   flex-direction: column;
+  margin-left: 5%;
+
 }
 
 .product-name {
 
-  font-weight: 600;
-  color: #6a1b9a;
+  font-weight: 700;
+  color: #000000;
   margin-bottom: 8px;
 }
 
@@ -174,16 +177,18 @@ watch(()=> [props.jewelry_id,props.color_id], ()=>{
 }
 
 .size-button button {
-  padding: 6px 12px;
+  padding: 12px 12px;
   border: 1px solid #999;
-  border-radius: 6px;
   cursor: pointer;
   background: white;
   transition: background 0.2s;
+  font-size: 16px;
+  font-weight: bold;
+
 }
 
 .size-button button.active {
-  background: #6a1b9a;
+  background: #373737;
   color: white;
 }
 
@@ -194,27 +199,30 @@ watch(()=> [props.jewelry_id,props.color_id], ()=>{
 }
 
 .action-buttons {
-  display: flex;
   gap: 12px;
-  margin-top: auto;
+  margin-top: 50px;
+  display: inline-grid;
+  width: 70%;
+  height: 50px;
 }
 
 .buy-now {
+  font-size: 16px;
   background-color: black;
   color: white;
   padding: 10px 20px;
-  border-radius: 8px;
   border: none;
   cursor: pointer;
   font-weight: bold;
 }
 
 .add-to-cart {
+  font-size: 16px;
   background-color: white;
   color: black;
   padding: 10px 20px;
   border: 2px solid black;
-  border-radius: 8px;
+
   cursor: pointer;
   font-weight: bold;
 }
