@@ -20,11 +20,25 @@ const getJewByCategory = async(req,res) =>{
 
 const getJewById = async(req,res)=>{   // trả về sp ứng màu dã được chọn
     const{jewelry_id,color_id} = req.params;
-    const detail = await jewelryModel.getJewById(jewelry_id,color_id)
+    const rows = await jewelryModel.getJewById(jewelry_id,color_id)
 
-    if(detail){
-        res.json({message: detail})
+    if(!rows || rows.length === 0){
+        return res.status(404).json({message: 'Can not find product'})
     }
+    const first = rows[0]  //dùng dữ liệu chung từ dòng đầu tiên
+
+    const result  = {
+        jewelry_name: first.jewelry_name,
+        image: first.image,
+        jewelry_price: first.jewelry_price,
+        color_name: first.color_name,
+        sizes: rows.map(row =>({
+            size_number: row.size_number,
+            quantity: row.quantity
+        }))
+        
+    }
+    res.json({message: result})  //trả về 1 object
 };
 
 const searchJewByName = async(req,res) =>{

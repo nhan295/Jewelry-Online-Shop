@@ -37,17 +37,20 @@ const jewelryModel = {
                 'color_code.color_name',
                 'size.size_number',
                 'size.quantity')
-        .innerJoin('size','jewelry.jewelry_id','size.jewelry_id')
-        .innerJoin('color_code','color_code.jewelry_id','jewelry.jewelry_id')
+        .innerJoin('size','size.jewelry_id','jewelry.jewelry_id')  
+        .leftJoin('color_code',function(){
+            this.on('color_code.jewelry_id','=','jewelry.jewelry_id')
+            .andOn('color_code.color_id','=','size.color_id')
+        })
         .leftJoin('jewelry_img',function(){
             this.on('jewelry_img.jewelry_id','=','jewelry.jewelry_id')
             .andOn('jewelry_img.color_id','=','color_code.color_id')
         })
+       
         .where({'jewelry.jewelry_id':jewelry_id,
                 'color_code.color_id':color_id
-    })
-        .groupBy('jewelry.jewelry_id')
-
+    });
+        
 },
     searchJewByName: (jewelry_name) =>{
         return db('jewelry')

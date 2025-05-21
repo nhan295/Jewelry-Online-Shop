@@ -1,22 +1,51 @@
 <template>
-  <div class="product-name" v-if="productDetail">
-    <img :src="productDetail.image" alt="">
-   <!--chỉ hiển thị khi dữ liệu sản phẩm đã được tải xong -->
-      <a href="#">{{ productDetail.jewelry_name }}</a>
+  <div class="product-container" v-if="productDetail">
+    <!-- LEFT: IMAGE -->
+    <div class="product-image">
+      <img :src="productDetail.image" alt="Product Image" />
+    </div>
+
+    <!-- RIGHT: PRODUCT INFO -->
+      <div class="product-info">
+      <h1 class="product-name">{{ productDetail.jewelry_name }}</h1>
+
+      <h3 class="product-price">{{ Number(productDetail.jewelry_price).toLocaleString() }}₫</h3>
+
+      <!-- COLORS -->
       <div class="color-options">
-        <span v-for="(color,index) in props.color_code"
-        :key="index"
-        class="color-circle"
-        :style="{backgroundColor: color.color_name}"
-        @click="emitColorChange(color.color_id)"
-        :class="{active: color.color_id===props.color_id}"
-        >
+        <span v-for="(color, index) in props.color_code"
+              :key="index"
+              class="color-circle"
+              :style="{ backgroundColor: color.color_name }"
+              @click="emitColorChange(color.color_id)"
+              :class="{ active: color.color_id === props.color_id }">
         </span>
       </div>
-      <h3>{{ Number(productDetail.jewelry_price).toLocaleString() }}</h3>
-   
+
+      <!-- SIZES -->
+      <div class="size-options" v-if="productDetail.sizes && productDetail.sizes.length > 0">
+        <div class="size-button"
+             v-for="(size, idx) in productDetail.sizes"
+             :key="idx">
+          <button @click="selectedSize = idx"
+                  :class="{ active: selectedSize === idx }">
+            Size {{ size.size_number }}
+          </button>
+          <div v-if="selectedSize === idx">
+            <p>Còn lại: {{ size.quantity }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="action-buttons">
+        <button class="buy-now">Mua ngay</button>
+        <button class="add-to-cart">Thêm vào giỏ hàng</button>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script setup>
 import {ref,onMounted,watch} from 'vue';
@@ -24,6 +53,7 @@ import {ref,onMounted,watch} from 'vue';
 const loading = ref(true);
 const error = ref(null);
 const productDetail = ref(null);
+const selectedSize = ref(null);
 
 const props =  defineProps({
     jewelry_id: Number,
@@ -42,13 +72,14 @@ const fetchProductDetail = async()=>{
         console.log('Props nhận được:', props.jewelry_id, props.color_id);
 
         const data = await response.json();
-        const jewelry = data.message[0];   //??
+        const jewelry = data.message;   // result là object k phai mang
         
         productDetail.value = {
                 jewelry_name: jewelry.jewelry_name,
                 image: jewelry.image,
                 jewelry_price: jewelry.jewelry_price,
-                color_name: jewelry.color_name
+                color_name: jewelry.color_name,
+                sizes: jewelry.sizes   //mang cac size
         }
     }
    
@@ -74,43 +105,56 @@ watch(()=> [props.jewelry_id,props.color_id], ()=>{
 </script>
 
 <style scoped>
-.product-name {
+.product-container {
+  display: flex;
+  max-width: 80%;
+  margin: 30px auto;
   background-color: #fff;
-  padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  margin: 16px auto;
+  padding: 20px;
+  gap: 24px;
 }
 
-.product-name a {
-  display: block;
-  font-size: 20px;
+.product-image img {
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+
   font-weight: 600;
   color: #6a1b9a;
-  text-decoration: none;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.product-name a:hover {
-  text-decoration: underline;
+.product-price {
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
+  margin-bottom: 16px;
+  display: inline-flex;
 }
 
 .color-options {
-  margin: 10px 0;
   display: flex;
-  align-items: center;
   gap: 8px;
+  margin-bottom: 16px;
 }
 
 .color-circle {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 1px solid #ccc;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s;
 }
 
 .color-circle:hover {
@@ -122,9 +166,56 @@ watch(()=> [props.jewelry_id,props.color_id], ()=>{
   box-shadow: 0 0 4px #6a1b9a;
 }
 
-h2 {
-  font-size: 20px;
-  color: #000;
-  margin-top: 10px;
+.size-options {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.size-button button {
+  padding: 6px 12px;
+  border: 1px solid #999;
+  border-radius: 6px;
+  cursor: pointer;
+  background: white;
+  transition: background 0.2s;
+}
+
+.size-button button.active {
+  background: #6a1b9a;
+  color: white;
+}
+
+.size-button p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #555;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.buy-now {
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.add-to-cart {
+  background-color: white;
+  color: black;
+  padding: 10px 20px;
+  border: 2px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 }
 </style>
