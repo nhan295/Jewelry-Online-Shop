@@ -60,14 +60,18 @@ const jewelryModel = {
                 'size.size_number',
                 'jewelry_img.image'
             )
-        .innerJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
         .innerJoin('size','size.jewelry_id','jewelry.jewelry_id')
+        .leftJoin('color_code',function(){
+            this.on('color_code.jewelry_id','=','jewelry.jewelry_id')
+            .andOn('color_code.color_id','=','size.color_id')
+        })
         .leftJoin('jewelry_img',function(){
             this.on('jewelry_img.jewelry_id','=','jewelry.jewelry_id')
             .andOn('jewelry_img.color_id','=','color_code.color_id')
         })
         .where('jewelry_name','like',`%${jewelry_name}%`)
         .limit(4)
+        .groupBy('jewelry.jewelry_id','color_code.color_id');
     }
 
 }
