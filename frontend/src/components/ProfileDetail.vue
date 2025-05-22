@@ -21,22 +21,22 @@
           <div class="account-grid">
             <div>
               <strong>Username</strong>
-              <h2>{{ userName }}</h2>
+              <p>{{ userName }}</p>
             </div>
 
             <div>
               <strong>Date Created</strong>
-              <h2>{{ userCreated }}</h2>
+              <p>{{ userCreated }}</p>
             </div>
 
             <div>
               <strong>Email</strong>
-              <h2>{{ userEmail }}</h2>
+              <p>{{ userEmail }}</p>
             </div>
 
             <div>
               <strong>Mobile</strong>
-              <h3>{{ userMobile }}</h3>
+              <p>{{ userMobile }}</p>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@
         <!-- Danh sách địa chỉ -->
         <div class="address-item">
           <div>
-            <strong>Trần Nhan - 0375458318</strong>
+            <strong>{{ userName }}- {{ userMobile }}</strong>
             <div>, Vietnam</div>
             <div class="label">Nhà riêng</div>
           </div>
@@ -164,7 +164,7 @@ strong{
   margin-bottom: 20px;
 }
 
-.account-header h2 {
+.account-header {
   font-size: 18px;
   font-family: Georgia, "Times New Roman", Times, serif;
   font-weight: bold;
@@ -200,11 +200,11 @@ strong{
 
 .address-box {
   border: 1px solid #ccc;
-  padding: 16px;
+  padding: 20px;
   width: 100%;
   max-width: 600px;
   font-family: Arial, sans-serif;
-  margin-top: 7%;
+  margin-top: 5%;
   margin-right: 10%;
 }
 
@@ -264,5 +264,11 @@ strong{
   cursor: pointer;
   font-weight: bold;
   color: #000;
+}
+
+p{
+  font-size: 16px;
+  font-family: sans-serif;
+  font-weight: 700
 }
 </style>

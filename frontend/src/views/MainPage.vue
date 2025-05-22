@@ -1,6 +1,7 @@
 <template>
     <UserHeader @search-input="handleSearch" @select-category="handleCategory"/>   <!--lang nghe su kien select-category--> 
     <MenuShow  @select-subcate = "handleSubcate" v-if="selectedCategory":category="selectedCategory"/>    <!--lưu trạng thái mục đã chọn--> 
+    <MainProduct/>
     <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
     <ProductDetail v-if="selectedProduct"
@@ -8,6 +9,7 @@
       v-model:color_id="selectedProduct.color_id"  
       :color_code="selectedProduct.color_code"/>
  <!-- v-model để nhận ra sự thay đổi của props(color_id) -->
+  
 </template>
 
 <script setup>
@@ -17,6 +19,8 @@ import UserHeader from '../components/UserHeader.vue';
 import ProductsList from '../components/ProductsList.vue';
 import SearchResult from '../components/SearchResult.vue';
 import ProductDetail from '../components/ProductDetail.vue';
+import MainProduct from '../components/MainProduct.vue';
+
 
 import {ref} from 'vue';
 

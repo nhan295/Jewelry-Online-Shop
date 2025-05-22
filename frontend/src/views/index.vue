@@ -1,67 +1,69 @@
 <template>
     <div>
         <div class="page-background"></div>
-        <div class="container">
-            <h2>TÀI KHOẢN CỦA TÔI</h2>
-            <p>Đăng nhập ngay để nhận các ưu đãi độc quyền từ tiệm Xies Xies</p>
-            
-            <!-- Navigate form -->
-            <div class="tabs">
-                <button
-                :class="{ active: isLogin }"
-                @click="isLogin = true"
-                >ĐĂNG NHẬP</button>
-                
-                <button
-                :class="{ active: !isLogin }"
-                @click="isLogin = false"
-                >ĐĂNG KÝ</button>
-            </div>
-        <!-- Login form -->
-         
-            <form v-if="isLogin" @submit.prevent="handleLogin" >
-                <div class="form active">
-                    <input type="text" placeholder="Username" v-model="loginForm.username" required>
-                </div>
+          <div class="wrapper">
+          <div class="container">
+              <h2>TÀI KHOẢN CỦA TÔI</h2>
+              <p>Đăng nhập ngay để nhận các ưu đãi độc quyền từ tiệm Xies Xies</p>
+              
+              <!-- Navigate form -->
+              <div class="tabs">
+                  <button
+                  :class="{ active: isLogin }"
+                  @click="isLogin = true"
+                  >ĐĂNG NHẬP</button>
+                  
+                  <button
+                  :class="{ active: !isLogin }"
+                  @click="isLogin = false"
+                  >ĐĂNG KÝ</button>
+              </div>
+          <!-- Login form -->
+          
+              <form v-if="isLogin" @submit.prevent="handleLogin" >
+                  <div class="form active">
+                      <input type="text" placeholder="Username" v-model="loginForm.username" required>
+                  </div>
 
-                <div class="form active">
-                      <input type="password" placeholder="Password" v-model="loginForm.password" required>
-                </div>
-                
-                <span class="message-resgister">{{message}}</span>
-            
-            <button type="submit" class="submit-btn">Login</button>
-            </form>
-        
-        <!-- Register form -->
-            <form v-else  @submit.prevent="handleRegister">
-                <div class="form active">
-                    <input type="text" placeholder="Username" v-model="registerForm.username" required>
-                </div>
+                  <div class="form active">
+                        <input type="password" placeholder="Password" v-model="loginForm.password" required>
+                  </div>
+                  
+                  <span class="message-resgister">{{message}}</span>
+              
+              <button type="submit" class="submit-btn">Login</button>
+              </form>
+          
+          <!-- Register form -->
+              <form v-else  @submit.prevent="handleRegister">
+                  <div class="form active">
+                      <input type="text" placeholder="Username" v-model="registerForm.username" required>
+                  </div>
 
-                <div class="form active">
-                    <input type="email" placeholder="Email" v-model="registerForm.email" required>
-                </div>
+                  <div class="form active">
+                      <input type="email" placeholder="Email" v-model="registerForm.email" required>
+                  </div>
 
-                <div class="form active">
-                    <input type="text" placeholder="Address" v-model="registerForm.address" required>
-                </div>
+                  <div class="form active">
+                      <input type="text" placeholder="Address" v-model="registerForm.address" required>
+                  </div>
 
-                <div class="form active">
-                    <input type="password" placeholder="Password" v-model="registerForm.password" required>
-                </div>
+                  <div class="form active">
+                      <input type="password" placeholder="Password" v-model="registerForm.password" required>
+                  </div>
 
-                <div class="form active">
-                    <input type="password" placeholder="Confirm Password" v-model="registerForm.confirmPass" required>
-                </div>
+                  <div class="form active">
+                      <input type="password" placeholder="Confirm Password" v-model="registerForm.confirmPass" required>
+                  </div>
 
-                <div class="form active">
-                    <input id="date" type="hidden" placeholder="" v-model="registerForm.date">
-                </div>
+                  <div class="form active">
+                      <input id="date" type="hidden" placeholder="" v-model="registerForm.date">
+                  </div>
 
-            <span class="message-resgister">{{message}}</span>
-            <button type="submit" class="submit-btn">ĐĂNG KÝ</button>
-            </form>
+              <span class="message-resgister">{{message}}</span>
+              <button type="submit" class="submit-btn">ĐĂNG KÝ</button>
+              </form>
+          </div>
         </div>
    </div>
 </template>
@@ -164,23 +166,30 @@ const handleRegister = async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: #f0f5f9; /* Nền ngoài cùng màu xanh da trời nhạt */
+  background-color: #ffffff; /* Nền ngoài cùng màu xanh da trời nhạt */
   z-index: -1;
 }
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Chiều cao 100% màn hình */
+  position: relative;
+}
+
 
 .container {
   width: 350px;
-  border: 1px solid #d0e6f0;
+  border: 1px solid #a4a4a4;
   background-color: #ffffff; /* Nền trắng */
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Bóng nhẹ */
-  margin-top: 50px;
   font-family: sans-serif;
+  justify-content: center;
 }
 
 h2 {
-  color: #4682B4; /* Màu xanh da trời (Steel Blue) cho tiêu đề */
+  color: #000000; /* Màu xanh da trời (Steel Blue) cho tiêu đề */
   text-align: center;
   margin-bottom: 10px;
 }

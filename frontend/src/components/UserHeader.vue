@@ -34,7 +34,7 @@
                 </div>
               </div>
             </div>
-            <i class="fas fa-shopping-bag"></i>
+            <router-link to="/cart"><i class="fas fa-shopping-bag"></i></router-link> 
           </div>
         </div>
       </div>

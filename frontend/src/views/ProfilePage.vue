@@ -1,6 +1,6 @@
 <template>
     <UserHeader @select-category="handleCategorySelect"/>   <!--lang nghe su kien select-category--> 
-    <SubcateShow v-if="selectedCategory":category="selectedCategory"/>   <!--lưu trạng thái mục đã chọn--> 
+    <MenuShowShow v-if="selectedCategory":category="selectedCategory"/>   <!--lưu trạng thái mục đã chọn--> 
     <ProfileDetail/>
     
 </template>
@@ -8,7 +8,7 @@
 <script setup>
 
 import ProfileDetail from '../components/ProfileDetail.vue';
-import SubcateShow from '../components/MenuShow.vue';
+import MenuShowShow from '../components/MenuShow.vue';
 import UserHeader from '../components/UserHeader.vue';
 
 import {ref} from 'vue';
