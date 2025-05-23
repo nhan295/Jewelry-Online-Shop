@@ -35,6 +35,7 @@ const jewelryModel = {
                 'jewelry_img.image',
                 'jewelry.jewelry_price',
                 'color_code.color_name',
+                'size_id',
                 'size.size_number',
                 'size.quantity')
         .innerJoin('size','size.jewelry_id','jewelry.jewelry_id')  

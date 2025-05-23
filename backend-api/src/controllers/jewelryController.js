@@ -33,6 +33,7 @@ const getJewById = async(req,res)=>{   // trả về sp ứng màu dã được 
         jewelry_price: first.jewelry_price,
         color_name: first.color_name,
         sizes: rows.map(row =>({
+            size_id: row.size_id,
             size_number: row.size_number,
             quantity: row.quantity
         }))
