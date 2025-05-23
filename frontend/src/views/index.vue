@@ -114,8 +114,9 @@ const handleLogin = async() => {
       credentials: 'include',
       body: JSON.stringify({ username,  password})
     })
-    const resData = await response.json
+    const resData = await response.json();
     if(response.ok){
+      localStorage.setItem("user", JSON.stringify(resData.message));
       router.push('/userpage')
     }else{
       message.value = resData.message || 'Login failed'

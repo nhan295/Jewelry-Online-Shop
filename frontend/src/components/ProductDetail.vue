@@ -40,7 +40,9 @@
       <!-- ACTION BUTTONS -->
       <div class="action-buttons">
         <button class="buy-now">Mua ngay</button>
-        <button class="add-to-cart">Thêm vào giỏ hàng</button>
+        <button @click.prevent="emitAddCart(user_id,props.jewelry_id,props.color_id,productDetail.sizes[selectedSize].size_id)"
+        class="add-to-cart"
+        :disabled="selectedSize === null">Thêm vào giỏ hàng</button>
       </div>
     </div>
   </div>
@@ -54,7 +56,7 @@ const loading = ref(true);
 const error = ref(null);
 const productDetail = ref(null);
 const selectedSize = ref(null);
-
+const user_id = ref(null);
 const props =  defineProps({
     jewelry_id: Number,
     color_id: Number,
@@ -79,8 +81,9 @@ const fetchProductDetail = async()=>{
                 image: jewelry.image,
                 jewelry_price: jewelry.jewelry_price,
                 color_name: jewelry.color_name,
-                sizes: jewelry.sizes   //mang cac size
-        }
+                sizes: jewelry.sizes,   //mang cac size
+                
+              }
     }
    
     catch(err){
@@ -90,18 +93,30 @@ const fetchProductDetail = async()=>{
         loading.value = false
     }
 }
-const emit = defineEmits(['update:color_id']) 
+const emit = defineEmits(['update:color_id','add-cart']) 
 const emitColorChange  = (color_id)=>{
   if(color_id !== props.color_id)   //neu mau bam vao khac mau hien tai
     emit('update:color_id',color_id)
 }
+
+const emitAddCart = (user_id, jewelry_id, color_id, size_id) => {
+  emit('add-cart', { user_id, jewelry_id, color_id, size_id });
+  console.log('Clicked:', { user_id, jewelry_id, color_id, size_id });
+};
 onMounted(fetchProductDetail);
 watch(()=> [props.jewelry_id,props.color_id], ()=>{
     console.log('Fetching with:', props.jewelry_id, props.color_id); 
     fetchProductDetail();
-}
-)
+})
+onMounted(() => {
+  const storeUser = localStorage.getItem('user');
 
+  if (storeUser) {
+    const parsedUser = JSON.parse(storeUser);
+    user_id.value = parsedUser.user_id;
+    console.log('user_id lấy ra:', user_id.value);
+  }
+});
 </script>
 
 <style scoped>

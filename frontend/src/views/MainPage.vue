@@ -1,7 +1,7 @@
 <template>
     <UserHeader @search-input="handleSearch" @select-category="handleCategory"/>   <!--lang nghe su kien select-category--> 
     <MenuShow  @select-subcate = "handleSubcate" v-if="selectedCategory":category="selectedCategory"/>    <!--lưu trạng thái mục đã chọn--> 
-    <MainProduct/>
+    <MainProduct v-if="!selectedSubcate && !searchProduct && !selectedProduct"/>
     <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
     <ProductDetail v-if="selectedProduct"
@@ -20,6 +20,7 @@ import ProductsList from '../components/ProductsList.vue';
 import SearchResult from '../components/SearchResult.vue';
 import ProductDetail from '../components/ProductDetail.vue';
 import MainProduct from '../components/MainProduct.vue';
+//import Cart from '../components/Cart.vue';
 
 
 import {ref} from 'vue';
@@ -56,5 +57,7 @@ const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 o
   selectedCategory.value = null;
   selectedSubcate.value = null;
 };
+
+
 </script>
 
