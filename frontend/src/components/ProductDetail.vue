@@ -40,7 +40,7 @@
       <!-- ACTION BUTTONS -->
       <div class="action-buttons">
         <button class="buy-now">Mua ngay</button>
-        <button @click.prevent="hanldleAddToCart" 
+        <button @click.prevent="handleAddToCart" 
         class="add-to-cart"
         :disabled="selectedSize === null">Thêm vào giỏ hàng</button>
       </div>
@@ -124,7 +124,7 @@ const addCart = async() =>{
         error.value = err.message
     }
 }
-function hanldleAddToCart(){
+function handleAddToCart(){
   emitGetUserId(user_id);
   addCart();
 }
