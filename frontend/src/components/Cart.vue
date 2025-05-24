@@ -3,12 +3,12 @@
   <div v-if="cartItem" class="cart-item">
     <h3>Đã thêm vào giỏ hàng:</h3>
     <pre>{{ cartItem }}</pre> <!-- Debug xem chứa gì -->
-
+    <img :src="cartItem.image" alt="">
     <p><strong>Sản phẩm:</strong> {{ cartItem.jewelry_name }}</p>
     <p><strong>Màu sắc:</strong> {{ cartItem.color_name }}</p>
     <p><strong>Kích cỡ:</strong> {{ cartItem.size_number }}</p>
     <p><strong>Số lượng:</strong> {{ cartItem.quantity }}</p>
-    <img :src="cartItem.image" alt="">
+    
   </div>
 
   <div v-else-if="loading">Đang thêm vào giỏ hàng...</div>
@@ -69,7 +69,6 @@ import { watch } from 'vue';
 
 watchEffect(() => {
   if (props.jewelry_id && props.color_id && props.size_id && props.quantity) {
-    console.log('Calling addCart() from watchEffect');
     addCart();
   }
 });

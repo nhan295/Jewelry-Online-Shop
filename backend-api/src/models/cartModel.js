@@ -17,7 +17,7 @@ const cartModel = {
       .first(); //trả về 1 object thay vì 1 mảng
   },
 
-  addCart: async (user_id, jewelry_id, color_id, size_id, quantity,img_id) => {
+  addCart: async (user_id, jewelry_id, color_id, size_id, quantity) => {
     const existingItem = await cartModel.getCartItem(
       user_id,
       jewelry_id,
@@ -75,24 +75,13 @@ const cartModel = {
     return item;
   },
 
-  updateCartQuantity: async (
-    user_id,
-    jewelry_id,
-    size_id,
-    color_id,
-    add_quantity
-  ) => {
-    const existingItem = await cartModel.getCartItem(
-      user_id,
-      jewelry_id,
-      color_id,
-      size_id
-    );
+  updateCartQuantity: async (user_id,jewelry_id,size_id,color_id,add_quantity) => {
+    const existingItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id);
     if (!existingItem) {
       throw new Error("Can found item in cart");
     }
     const newQuantity = add_quantity + existingItem.quantity;
-    return db("cart")
+    await db("cart")
       .update({
         quantity: newQuantity,
       })
@@ -101,7 +90,31 @@ const cartModel = {
         user_id: user_id,
         size_id: size_id,
         color_id: color_id,
-      });
+      })
+    return db('cart')
+    .select( "cart.user_id",
+        "cart.jewelry_id",
+        "jewelry.jewelry_name as jewelry_name",
+        "cart.color_id",
+        "color_code.color_name as color_name",
+        "cart.size_id",
+        "size.size_number as size_number",
+        "cart.quantity",
+        "jewelry_img.image as image")
+    .leftJoin("jewelry", "cart.jewelry_id", "jewelry.jewelry_id")
+    .leftJoin("color_code", "cart.color_id", "color_code.color_id")
+    .leftJoin("size", "cart.size_id", "size.size_id")
+    .leftJoin("jewelry_img",function(){
+        this.on('jewelry_img.jewelry_id','=','jewelry.jewelry_id')
+            .andOn('jewelry_img.color_id','=','color_code.color_id')
+      })
+     .where({
+        "cart.user_id": user_id,
+        "cart.jewelry_id": jewelry_id,
+        "cart.color_id": color_id,
+        "cart.size_id": size_id
+      })
+    .first();
   },
 
   updateCart: async (

@@ -26,10 +26,12 @@ const addCart = async(req,res) =>{
         const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
 
         if(existCartItem){
-            await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
-            return res.status(200).json({message: 'Updated quantity item!'})
+            const updatedItem = await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
+            return res.status(200).json(updatedItem)
+            
         }
         const item = await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity,img_id);
+         // Trả về thông tin chi tiết thay vì chỉ message
         return res.status(200).json(item)
     }
     catch(error){
