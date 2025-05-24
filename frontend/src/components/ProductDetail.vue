@@ -40,7 +40,7 @@
       <!-- ACTION BUTTONS -->
       <div class="action-buttons">
         <button class="buy-now">Mua ngay</button>
-        <button @click.prevent="emitAddCart(user_id,props.jewelry_id,props.color_id,productDetail.sizes[selectedSize].size_id,1)"
+        <button @click.prevent="hanldleAddToCart" 
         class="add-to-cart"
         :disabled="selectedSize === null">Thêm vào giỏ hàng</button>
       </div>
@@ -57,6 +57,7 @@ const error = ref(null);
 const productDetail = ref(null);
 const selectedSize = ref(null);
 const user_id = ref(null);
+const cartItem = ref(null);
 const props =  defineProps({
     jewelry_id: Number,
     color_id: Number,
@@ -85,7 +86,6 @@ const fetchProductDetail = async()=>{
                 
               }
     }
-   
     catch(err){
         error.value = err.message
     }
@@ -93,16 +93,51 @@ const fetchProductDetail = async()=>{
         loading.value = false
     }
 }
-const emit = defineEmits(['update:color_id','add-cart']) 
+
+
+const addCart = async() =>{
+    try{
+        const response = await fetch('http://localhost:3000/api/v1/cart/add',{
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({
+                user_id: user_id.value,
+                jewelry_id: props.jewelry_id,
+                color_id: props.color_id,
+                size_id: productDetail.value.sizes[selectedSize.value].size_id, //Lấy ra object size được chọn từ mảng
+                quantity: 1
+            })
+    
+        })
+        if (response.ok){
+            const data = await response.json();
+            cartItem.value = data
+            console.log('Added to cart',data)
+        }else{
+             throw new Error('Failed to add to cart')
+        }
+       
+    }
+
+    catch(err){
+        error.value = err.message
+    }
+}
+function hanldleAddToCart(){
+  emitGetUserId(user_id);
+  addCart();
+}
+const emit = defineEmits(['update:color_id','get-user']) 
 const emitColorChange  = (color_id)=>{
   if(color_id !== props.color_id)   //neu mau bam vao khac mau hien tai
     emit('update:color_id',color_id)
 }
 
-const emitAddCart = (user_id, jewelry_id, color_id, size_id,quantity) => {
-  emit('add-cart', { user_id, jewelry_id, color_id, size_id,quantity});
-  console.log('Clicked:', { user_id, jewelry_id, color_id, size_id,quantity});
-};
+const emitGetUserId = (user_id)=>{
+  emit('get-user',user_id.value)
+  console.log('Clicked:',user_id.value)
+}
 
 onMounted(() => {
   if (props.jewelry_id && props.color_id) {
