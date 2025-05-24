@@ -22,15 +22,15 @@ const getCartData = async(req,res) =>{
 
 const addCart = async(req,res) =>{
     try{
-        const {user_id,jewelry_id,color_id,size_id,quantity} = req.body;
+        const {user_id,jewelry_id,color_id,size_id,quantity,img_id} = req.body;
         const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
 
         if(existCartItem){
             await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
             return res.status(200).json({message: 'Updated quantity item!'})
         }
-        await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity);
-        return res.status(200).json({message: 'Add cart successfully!'})
+        const item = await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity,img_id);
+        return res.status(200).json(item)
     }
     catch(error){
         console.error(error)
