@@ -16,6 +16,7 @@ const jewelryModel = {
                 'sub_categories.sub_name',
                 'jewelry.jewelry_price', 
                 'jewelry_img.image',
+                'jewelry_img.img_id',
                 'color_code.color_name',
                 'color_code.color_id')
         .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
@@ -33,6 +34,7 @@ const jewelryModel = {
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_id',
                 'jewelry_img.image',
+                'jewelry_img.img_id',
                 'jewelry.jewelry_price',
                 'color_code.color_name',
                 'size_id',

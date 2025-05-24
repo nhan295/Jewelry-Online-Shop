@@ -29,6 +29,7 @@ const getJewById = async(req,res)=>{   // trả về sp ứng màu dã được 
 
     const result  = {
         jewelry_name: first.jewelry_name,
+        img_id: first.img_id,
         image: first.image,
         jewelry_price: first.jewelry_price,
         color_name: first.color_name,
