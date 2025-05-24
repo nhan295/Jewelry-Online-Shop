@@ -59,8 +59,7 @@
 <script setup>
 import {ref} from 'vue';
 import { useRouter } from 'vue-router';
-import Cart from './Cart.vue';
-const showCart = ref(false);
+
 
 const router = useRouter();
 const jewelry_name = ref('');

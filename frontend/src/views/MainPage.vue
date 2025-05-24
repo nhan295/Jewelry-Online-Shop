@@ -10,12 +10,6 @@
       :jewelry_id="selectedProduct.jewelry_id"
       v-model:color_id="selectedProduct.color_id"  
       :color_code="selectedProduct.color_code"/>
-    <Cart v-if="addCart"
-    :user_id="addCart.user_id"
-    :jewelry_id="addCart.jewelry_id"
-    :color_id="addCart.color_id"
-    :size_id="addCart.size_id"
-    :quantity="addCart.quantity"/>
  <!-- v-model để nhận ra sự thay đổi của props(color_id) -->
     
 
@@ -29,10 +23,6 @@ import ProductsList from '../components/ProductsList.vue';
 import SearchResult from '../components/SearchResult.vue';
 import ProductDetail from '../components/ProductDetail.vue';
 import MainProduct from '../components/MainProduct.vue';
-import Cart from '../components/Cart.vue';
-
-
-
 import {ref} from 'vue';
 
 const selectedCategory = ref(null);
