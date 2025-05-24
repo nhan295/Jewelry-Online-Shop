@@ -22,17 +22,15 @@ const getCartData = async(req,res) =>{
 
 const addCart = async(req,res) =>{
     try{
-        const {user_id,jewelry_id,color_id,size_id,quantity,img_id} = req.body;
+        const {user_id,jewelry_id,color_id,size_id,quantity} = req.body;
         const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
 
         if(existCartItem){
-            const updatedItem = await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
-            return res.status(200).json(updatedItem)
-            
+            await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
+            return res.status(200).json({message: 'Updated quantity item!'})
         }
-        const item = await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity,img_id);
-         // Trả về thông tin chi tiết thay vì chỉ message
-        return res.status(200).json(item)
+        await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity);
+        return res.status(200).json({message: 'Add cart successfully!'})
     }
     catch(error){
         console.error(error)
@@ -80,5 +78,3 @@ module.exports = {
     deleteCartItem,
     updateCart
 }
-
-
