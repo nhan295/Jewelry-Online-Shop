@@ -40,7 +40,7 @@
       <!-- ACTION BUTTONS -->
       <div class="action-buttons">
         <button class="buy-now">Mua ngay</button>
-        <button @click.prevent="emitAddCart(user_id,props.jewelry_id,props.color_id,productDetail.sizes[selectedSize].size_id)"
+        <button @click.prevent="emitAddCart(user_id,props.jewelry_id,props.color_id,productDetail.sizes[selectedSize].size_id,1)"
         class="add-to-cart"
         :disabled="selectedSize === null">Thêm vào giỏ hàng</button>
       </div>
@@ -99,22 +99,29 @@ const emitColorChange  = (color_id)=>{
     emit('update:color_id',color_id)
 }
 
-const emitAddCart = (user_id, jewelry_id, color_id, size_id) => {
-  emit('add-cart', { user_id, jewelry_id, color_id, size_id });
-  console.log('Clicked:', { user_id, jewelry_id, color_id, size_id });
+const emitAddCart = (user_id, jewelry_id, color_id, size_id,quantity) => {
+  emit('add-cart', { user_id, jewelry_id, color_id, size_id,quantity});
+  console.log('Clicked:', { user_id, jewelry_id, color_id, size_id,quantity});
 };
-onMounted(fetchProductDetail);
+
+onMounted(() => {
+  if (props.jewelry_id && props.color_id) {
+    fetchProductDetail();
+  }
+});
+
 watch(()=> [props.jewelry_id,props.color_id], ()=>{
     console.log('Fetching with:', props.jewelry_id, props.color_id); 
     fetchProductDetail();
 })
+
 onMounted(() => {
   const storeUser = localStorage.getItem('user');
 
   if (storeUser) {
     const parsedUser = JSON.parse(storeUser);
     user_id.value = parsedUser.user_id;
-    console.log('user_id lấy ra:', user_id.value);
+  
   }
 });
 </script>
