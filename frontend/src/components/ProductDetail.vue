@@ -113,7 +113,8 @@ const addCart = async() =>{
         if (response.ok){
             const data = await response.json();
             cartItem.value = data
-            console.log('Added to cart',data)
+  
+            window.confirm("Added to cart");
         }else{
              throw new Error('Failed to add to cart')
         }
@@ -128,16 +129,12 @@ function handleAddToCart(){
   emitGetUserId(user_id);
   addCart();
 }
-const emit = defineEmits(['update:color_id','get-user']) 
+const emit = defineEmits(['update:color_id']) 
 const emitColorChange  = (color_id)=>{
   if(color_id !== props.color_id)   //neu mau bam vao khac mau hien tai
     emit('update:color_id',color_id)
 }
 
-const emitGetUserId = (user_id)=>{
-  emit('get-user',user_id.value)
-  console.log('Clicked:',user_id.value)
-}
 
 onMounted(() => {
   if (props.jewelry_id && props.color_id) {
