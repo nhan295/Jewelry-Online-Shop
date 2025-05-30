@@ -6,7 +6,7 @@
     <MainProduct v-if="!selectedSubcate && !searchProduct && !selectedProduct"/>
     <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>   <!--selectSub=5 <=> props.sub_id=5-->
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
-    <ProductDetail  @add-cart="handleAddCart" v-if="selectedProduct"
+    <ProductDetail   v-if="selectedProduct"
       :jewelry_id="selectedProduct.jewelry_id"
       v-model:color_id="selectedProduct.color_id"  
       :color_code="selectedProduct.color_code"/>
@@ -58,17 +58,7 @@ const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 o
   selectedSubcate.value = null;
 };
 
-const addCart = ref(null);
-const handleAddCart = ({user_id,jewelry_id,color_id,size_id,quantity})=>{
-  addCart.value = {
-    user_id,
-    jewelry_id,
-    color_id,
-    size_id,
-    quantity
-  }
-  console.log('Gửi vào Cart:', addCart.value);
-}
+
 
 
 </script>
