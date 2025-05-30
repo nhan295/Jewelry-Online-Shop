@@ -5,7 +5,11 @@ const cartModel = {
     return db("cart")
     .select(
         'jewelry.jewelry_name',
+        'jewelry.jewelry_id',
+        'jewelry.jewelry_price',
         'color_code.color_name',
+        'color_code.color_id',
+        'size.size_id',
         'size.size_number',
         'cart.quantity',
         'jewelry_img.image'

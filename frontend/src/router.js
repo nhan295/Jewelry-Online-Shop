@@ -11,7 +11,7 @@ const routes = [
     {path: '/', component: BrowsePage},
     {path: '/userpage', component: MainPage},
     {path: '/profile', component: ProfilePage},
-    {path: '/cart',component: CartPage}
+    {path: '/cart/:user_id',component: CartPage, props: true}
 ];
 
 const router = createRouter({
