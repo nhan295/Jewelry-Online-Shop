@@ -30,6 +30,7 @@
                 </div>
                 <div class="user-dropdown">
                   <router-link to="/profile">User Infomation</router-link>
+                  <router-link>Purchase history</router-link>
                   <a href="#" @click="logout()">Logout</a>
                 </div>
               </div>
