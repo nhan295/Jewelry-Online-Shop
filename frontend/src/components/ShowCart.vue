@@ -33,9 +33,6 @@
                 <div class="current-price">
                   {{ Number(item.jewelry_price).toLocaleString() }}₫
                 </div>
-                <div v-if="item.old_price" class="old-price">
-                  {{ Number(item.old_price).toLocaleString() }}₫
-                </div>
               </div>
 
               <div class="quantity-section">

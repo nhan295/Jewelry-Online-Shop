@@ -34,7 +34,10 @@
                 </div>
               </div>
             </div>
-            <router-link to="/cart"><i class="fas fa-shopping-bag"></i></router-link> 
+            <!-- Sau: -->
+            <div @click="handleCartClick">
+              <i class="fas fa-shopping-bag"></i>
+            </div>
           </div>
         </div>
       </div>
@@ -57,15 +60,16 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {ref,onMounted} from 'vue';
 import { useRouter } from 'vue-router';
+const user_id = ref(null);
 
 
 const router = useRouter();
 const jewelry_name = ref('');
 
 const activeCategory = ref(null);  //quan li trang thai mui ten
-const emit = defineEmits(['select-category','search-input']);  //khai bao emit cho su kien select-category
+const emit = defineEmits(['select-category','search-input','get-user']);  //khai bao emit cho su kien select-category
 const selectCategory = (category) => {
   activeCategory.value = activeCategory.value === category ? null: category    //nếu mục đó đã được mở thì gán lại null
   emit('select-category',activeCategory.value) //phat ra su kien kem theo du lieu cua category  
@@ -73,6 +77,16 @@ const selectCategory = (category) => {
  const emitSearch = () =>{    // đã khai báo biến trạng thái 
   emit('search-input',jewelry_name.value)
  }
+
+const handleCartClick = () =>{
+  if(!user_id.value){
+    console.log('user_id chưa có')
+    return;
+  }
+  emit('get-user',user_id.value);
+  router.push(`/cart/${user_id.value}`)
+  console.log('clicked user_id:', user_id.value)
+}
 
 const logout = async() =>{
   const response = await fetch("http://localhost:3000/api/v1/user/logout",{
@@ -84,6 +98,15 @@ const logout = async() =>{
     router.push('/')
   }
 }
+onMounted(() => {
+  const storeUser = localStorage.getItem('user');
+
+  if (storeUser) {
+    const parsedUser = JSON.parse(storeUser);
+    user_id.value = parsedUser.user_id;
+  
+  }
+});
 </script>
 
 <style scoped>
