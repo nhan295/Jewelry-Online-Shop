@@ -96,16 +96,33 @@ const logout = async() =>{
     credentials: 'include'
   })
   if(response.ok){
+    localStorage.removeItem('user');
     router.push('/')
   }
 }
-onMounted(() => {
+onMounted(async() => {
+    //nếu không có localStorage kiểm tra session từ server
+    try{
+      const response = await fetch("http://localhost:3000/api/v1/user/",{
+        method: 'GET',
+        credentials: 'include'
+      });
+      if(response.ok){
+        const data = await response.json();
+        console.log('User data từ session:', data); 
+        user_id.value = data.user.user_id
+      }else{
+        console.log('Cant not find user in session');
+      }
+    }catch(err){
+      console.error('Error to get user from session',err)
+    }
+
   const storeUser = localStorage.getItem('user');
 
   if (storeUser) {
     const parsedUser = JSON.parse(storeUser);
     user_id.value = parsedUser.user_id;
-  
   }
 });
 </script>
