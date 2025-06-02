@@ -323,23 +323,11 @@ const getDate = () => {
   registerForm.value.date = currentDateTime
 }
 
-const handleGoogleLogin = async () => {
-  try {
-    // Mô phỏng Google OAuth flow
-    showMessage('Chức năng đăng nhập Google đang được phát triển...', 'error')
-    
-    // Trong thực tế, bạn sẽ redirect đến Google OAuth:
-    // window.location.href = 'http://localhost:3000/auth/google'
-    
-    // Hoặc sử dụng Google Sign-In SDK
-    // const response = await gapi.auth2.getAuthInstance().signIn()
-    // console.log('Google login response:', response)
-    
-  } catch (err) {
-    showMessage('Lỗi đăng nhập Google', 'error')
-    console.error(err)
-  }
+
+const handleGoogleLogin = () => {
+  window.location.href = 'http://localhost:3000/auth/google';
 }
+
 
 const handleLogin = async () => {
   if (!loginForm.value.username || !loginForm.value.password) {
@@ -418,7 +406,7 @@ const handleRegister = async () => {
     if (response.ok) {
       showMessage('Đăng ký thành công!', 'success')
       setTimeout(() => {
-        router.push('/userpage')
+        router.push('/index')
       }, 1500)
     } else {
       showMessage(resData.message || 'Đăng ký thất bại', 'error')

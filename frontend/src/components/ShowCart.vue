@@ -146,9 +146,6 @@
       </router-link>
     </div>
 
-    <div v-if="message" class="error-message">
-      {{ message }}
-    </div>
   </div>
 </template>
 
@@ -221,8 +218,7 @@ const decreaseQty = (index) => {
 
 const totalCartPrice = computed(() => {
   return cart.value.reduce(
-    (total, item) => total + item.jewelry_price * item.quantity,
-    0
+    (total, item) => total + item.jewelry_price * item.quantity,0
   );
 });
 
