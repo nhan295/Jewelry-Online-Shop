@@ -1,13 +1,17 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
+const passport = require('passport');
+require('./config/passport');
+
 const userRoute = require('./routes/userRoute');
 const jewelryRoute = require('./routes/jewelryRoute');
 const cartRoute = require('./routes/cartRoute');
+const authRoute = require('./routes/authRoute');
 
 const app = express();
 const session = require('express-session');
-const crypto = require('crypto')
-const secretKey = crypto.randomBytes(64).toString('hex');
+const secretKey = process.env.SESSION_SECRET;
 
 app.use(express.json());
 
@@ -18,7 +22,7 @@ app.use(cors({
 app.use(session({
     secret: secretKey,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: { 
         secure: false,
         httpOnly: true, // Ngan chan truy cap JavaScript phia client
@@ -28,8 +32,12 @@ app.use(session({
     }
 }))
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 userRoute.setup(app)
 jewelryRoute.setup(app)
 cartRoute.setup(app)
+authRoute.setup(app)
 
 module.exports = app
