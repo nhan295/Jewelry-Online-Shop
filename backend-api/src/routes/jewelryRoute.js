@@ -10,6 +10,7 @@ module.exports.setup = (app)=>{
     router.get('/category/:category', jewelryController.getJewByCategory);
     router.get('/search/:jewelry_name', jewelryController.searchJewByName);
     router.get('/id/:jewelry_id/color/:color_id', jewelryController.getJewById);
+    router.get('/all',jewelryController.getAllJew);
 
 
 }

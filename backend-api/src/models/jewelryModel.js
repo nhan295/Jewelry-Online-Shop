@@ -75,6 +75,26 @@ const jewelryModel = {
         .where('jewelry_name','like',`%${jewelry_name}%`)
         .limit(4)
         .groupBy('jewelry.jewelry_id','color_code.color_id');
+    },
+
+    getAllJew: ()=>{
+        return db('jewelry')
+        .select('jewelry.jewelry_name',
+                'jewelry.jewelry_id',
+                'sub_categories.sub_name',
+                'jewelry.jewelry_price', 
+                'jewelry_img.image',
+                'jewelry_img.img_id',
+                'color_code.color_name',
+                'color_code.color_id')
+        .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
+        .innerJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
+        .leftJoin('jewelry_img',function(){
+            this.on('jewelry_img.jewelry_id','=','jewelry.jewelry_id')
+            .andOn('jewelry_img.color_id','=','color_code.color_id')
+        })
+        .groupBy('jewelry.jewelry_id', 'sub_categories.sub_name','color_code.color_id')
+        .limit(10);
     }
 
 }

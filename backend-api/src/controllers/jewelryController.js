@@ -54,10 +54,20 @@ const searchJewByName = async(req,res) =>{
     }
 }
 
+const getAllJew = async(req,res) =>{
+    try{
+        const jewelry = await jewelryModel.getAllJew();
+        res.json({message: jewelry})
+    }
+    catch(err){
+        res.status(500).json({message:'Error finding products'})
+    }
+}
 
 module.exports = {
     getJewBySubCategory,
     getJewByCategory,
     getJewById,
-    searchJewByName
+    searchJewByName,
+    getAllJew
 }
