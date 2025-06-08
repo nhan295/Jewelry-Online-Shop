@@ -3,13 +3,10 @@
     @select-category="handleCategory"/>   <!--lang nghe su kien select-category--> 
     
     <MenuShow  @select-subcate = "handleSubcate" v-if="selectedCategory":category="selectedCategory"/>    <!--lưu trạng thái mục đã chọn--> 
-    <MainProduct v-if="!selectedSubcate && !searchProduct && !selectedProduct"/>
+    <MainProduct @show-product = "handleProductDetail"
+    v-if="!selectedSubcate && !searchProduct && !selectedProduct"/>
     <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>   <!--selectSub=5 <=> props.sub_id=5-->
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
-    <ProductDetail   v-if="selectedProduct"
-      :jewelry_id="selectedProduct.jewelry_id"
-      v-model:color_id="selectedProduct.color_id"  
-      :color_code="selectedProduct.color_code"/>
  <!-- v-model để nhận ra sự thay đổi của props(color_id) -->
     
 
@@ -21,7 +18,7 @@ import MenuShow from '../components/MenuShow.vue';
 import UserHeader from '../components/UserHeader.vue';
 import ProductsList from '../components/ProductsList.vue';
 import SearchResult from '../components/SearchResult.vue';
-import ProductDetail from '../components/ProductDetail.vue';
+
 import MainProduct from '../components/MainProduct.vue';
 import {ref} from 'vue';
 
@@ -48,6 +45,7 @@ const handleSearch = (jewelry_name) =>{
 };
 
 const selectedProduct = ref(null);
+
 const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 object rồi destructure
   selectedProduct.value = {
     jewelry_id,
@@ -56,9 +54,8 @@ const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 o
   }
   selectedCategory.value = null;
   selectedSubcate.value = null;
+  
 };
-
-
 
 
 </script>

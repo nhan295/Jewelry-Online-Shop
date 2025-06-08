@@ -22,12 +22,9 @@
       </div>
 
       <div class="product-name">
-        <a 
-          href="#"
-          @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.activeColorIndex].color_id,jewelry.color_code)"
-        >
-          {{ jewelry.jewelry_name }}
-        </a>
+         <router-link to="/product/detail"
+            @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.ActiveColorIndex].color_id, jewelry.color_code)">{{ jewelry.jewelry_name }}
+          </router-link>
 
       </div>
 
