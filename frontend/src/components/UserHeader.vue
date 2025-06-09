@@ -28,9 +28,9 @@
                   <i class="fas fa-user"></i>
                 </div>
                 <div class="user-dropdown">
-                  <router-link to="/profile">User Information</router-link>
-                  <router-link>Purchase history</router-link>
-                  <a href="#" @click="logout()">Logout</a>
+                  <router-link to="/profile">Thông tin tài khoản</router-link>
+                  <router-link>Lịch sử mua hàng</router-link>
+                  <a href="#" @click="logout()">Đăng xuất</a>
                 </div>
               </div>
             </div>
