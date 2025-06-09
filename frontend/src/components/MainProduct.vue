@@ -53,48 +53,68 @@
 
   <div class="suggest-product">
     <h2>GỢI Ý CHO BẠN</h2>
-    <div class="product-list">
-      <div class="product-card" v-for="(jewelry,index) in products" :key="index">
-        <div class=product-img>
-          <img :src="jewelry.color_code[jewelry.ActiveColorIndex].image" alt="">  
-        </div>
-        <div class="color-options">
-          <span
-          class="color-circle"
-          v-for="(color_code,idx) in jewelry.color_code"
-          :key="idx"
-          :style="{ backgroundColor: color_code.color_name }"
-          @click="jewelry.ActiveColorIndex = idx"
-          :class="{acitive: idx === jewelry.ActiveColorIndex}"
-          >
-          </span>
-        </div>
+    <div class="suggest-nav">
+      <button class="arrow-btn left" @click="scrollLeft" :disabled="currentIndex === 0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      
+      <div class="product-list-wrapper" ref="productWrapper">
+        <div class="product-list" 
+             :style="{ transform: `translateX(-${currentIndex * slideWidth}px)` }">
+          <div class="product-card" v-for="(jewelry, index) in products" :key="jewelry.jewelry_id">
+            <div class="product-img">
+              <img :src="jewelry.color_code[jewelry.ActiveColorIndex].image" alt="">  
+            </div>
+            <div class="color-options">
+              <span
+                class="color-circle"
+                v-for="(color_code,idx) in jewelry.color_code"
+                :key="idx"
+                :style="{ backgroundColor: color_code.color_name }"
+                @click="jewelry.ActiveColorIndex = idx"
+                :class="{active: idx === jewelry.ActiveColorIndex}"
+              >
+              </span>
+            </div>
 
-        <div class="product-name">
-          
-          <!-- <a href="#"
-            @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.ActiveColorIndex].color_id, jewelry.color_code)">
-            {{ jewelry.jewelry_name }}
-        </a> -->
-          <router-link to="/product/detail"
-            @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.ActiveColorIndex].color_id, jewelry.color_code)">{{ jewelry.jewelry_name }}
-          </router-link>
-        </div>
+            <div class="product-name">
+              <a href="#"
+                @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.ActiveColorIndex].color_id, jewelry.color_code)">
+                {{ jewelry.jewelry_name }}
+              </a>
+            </div>
 
-        <div class="product-price">
-          {{ Number(jewelry.color_code[jewelry.ActiveColorIndex].jewelry_price).toLocaleString() }}₫
+            <div class="product-price">
+              {{ Number(jewelry.color_code[jewelry.ActiveColorIndex].jewelry_price).toLocaleString() }}₫
+            </div>
+          </div>
         </div>
       </div>
+      
+      <button class="arrow-btn right" @click="scrollRight" :disabled="currentIndex >= maxIndex">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Dots indicator -->
+    <div class="dots-container">
+      <span v-for="(dot, index) in totalDots" 
+            :key="index"
+            class="dot"
+            :class="{ active: index === Math.floor(currentIndex / itemsPerSlide) }"
+            @click="goToSlide(index)">
+      </span>
     </div>
   </div>
-
-
 </template>
 
-
 <script setup>
-import { onBeforeMount } from 'vue';
-import {ref, onMounted} from 'vue';
+import { onBeforeMount, nextTick } from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import vongtay from '../assets/banner/vongtay.webp'
 import nhan from '../assets/banner/nhan.webp'
 import hoatai from '../assets/banner/hoatai.webp'
@@ -103,31 +123,84 @@ import block1 from '../assets/banner/block1.webp'
 import block2 from '../assets/banner/block2.webp'   
 import block3 from '../assets/banner/block3.webp'
 import block4 from '../assets/banner/block4.webp'
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const bannerImg = [
     '../src/assets/banner/banner1.webp',
     '../src/assets/banner/banner2.webp',
     '../src/assets/banner/banner3.webp'
-
 ]
-const currentBanner = ref(0)  // Track which image is currently being displayed (the position in the array)
-let intervalId = null;
-onMounted(()=>{
-    intervalId = setInterval(() => {
-        currentBanner.value = (currentBanner.value + 1)% bannerImg.length
-    }, 2000),
-    getAllJew();
-    console.log('Fetching all jewelry data...');
-})
 
-onBeforeMount(()=>{
-    clearInterval(intervalId)
-})
+const currentBanner = ref(0)
 const products = ref([]);
-const getAllJew = async()=>{
-  try{
+const currentIndex = ref(0);
+const productWrapper = ref(null);
+
+// Slider configuration
+const itemsPerSlide = ref(4); // Số sản phẩm hiển thị mỗi lần
+const slideWidth = computed(() => {
+  // Tính toán độ rộng mỗi slide dựa trên kích thước màn hình
+  if (typeof window !== 'undefined') {
+    if (window.innerWidth <= 640) return 280; // Mobile: 1 item
+    if (window.innerWidth <= 900) return 320; // Tablet: 2-3 items  
+    if (window.innerWidth <= 1200) return 350; // Desktop small: 3 items
+    return 380; // Desktop large: 4 items
+  }
+  return 380;
+});
+
+const maxIndex = computed(() => {
+  return Math.max(0, products.value.length - itemsPerSlide.value);
+});
+
+const totalDots = computed(() => {
+  return Math.ceil(products.value.length / itemsPerSlide.value);
+});
+
+let intervalId = null;
+
+onMounted(async () => {
+    // Banner rotation
+    intervalId = setInterval(() => {
+        currentBanner.value = (currentBanner.value + 1) % bannerImg.length
+    }, 2000);
+    
+    // Get jewelry data
+    await getAllJew();
+    console.log('Fetching all jewelry data...');
+    
+    // Update items per slide based on window size
+    updateItemsPerSlide();
+    window.addEventListener('resize', updateItemsPerSlide);
+});
+
+onBeforeMount(() => {
+    clearInterval(intervalId);
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateItemsPerSlide);
+    }
+});
+
+const updateItemsPerSlide = () => {
+    if (typeof window !== 'undefined') {
+        if (window.innerWidth <= 640) {
+            itemsPerSlide.value = 1;
+        } else if (window.innerWidth <= 900) {
+            itemsPerSlide.value = 2;
+        } else if (window.innerWidth <= 1200) {
+            itemsPerSlide.value = 3;
+        } else {
+            itemsPerSlide.value = 4;
+        }
+    }
+};
+
+const getAllJew = async () => {
+  try {
     const response = await fetch('http://localhost:3000/api/v1/jew/all');
-    if(!response.ok){
+    if (!response.ok) {
       throw new Error('Failed to fetch jewelry data');
     }
     const data = await response.json();
@@ -135,13 +208,13 @@ const getAllJew = async()=>{
 
     const groupJewelry = {};
 
-    jewelryData.forEach(jewelry=>{
+    jewelryData.forEach(jewelry => {
       const key = jewelry.jewelry_id;
-      if(!groupJewelry[key]){
+      if (!groupJewelry[key]) {
         groupJewelry[key] = {
           jewelry_id: jewelry.jewelry_id,
           jewelry_name: jewelry.jewelry_name,
-          ActiveColorIndex: 0, // Initialize active color index
+          ActiveColorIndex: 0,
           color_code: []
         }
       }
@@ -152,18 +225,56 @@ const getAllJew = async()=>{
         jewelry_price: jewelry.jewelry_price
       })
     });
-    products.value = Object.values(groupJewelry)
-
-  }catch(err){
-    return console.error('Error fetching all jewelry:', err);
+    
+    products.value = Object.values(groupJewelry);
+  } catch (err) {
+    console.error('Error fetching all jewelry:', err);
   }
-
 }
+
 const emits = defineEmits(['show-product']);
-const selectedProduct = (jewelry_id,color_id,color_code)=>{
+const selectedProduct = (jewelry_id, color_id, color_code) => {
   emits('show-product', {jewelry_id, color_id, color_code});
   console.log('Selected product:', { jewelry_id, color_id, color_code });
+  router.push('/product/detail');
 }
+
+// Slider functions
+function scrollLeft() {
+  if (currentIndex.value > 0) {
+    currentIndex.value = Math.max(0, currentIndex.value - itemsPerSlide.value);
+  }
+}
+
+function scrollRight() {
+  if (currentIndex.value < maxIndex.value) {
+    currentIndex.value = Math.min(maxIndex.value, currentIndex.value + itemsPerSlide.value);
+  }
+}
+
+function goToSlide(dotIndex) {
+  currentIndex.value = Math.min(dotIndex * itemsPerSlide.value, maxIndex.value);
+}
+
+// Auto scroll (optional)
+const startAutoScroll = () => {
+  return setInterval(() => {
+    if (currentIndex.value >= maxIndex.value) {
+      currentIndex.value = 0;
+    } else {
+      scrollRight();
+    }
+  }, 4000);
+};
+
+// Uncomment below if you want auto scroll
+let autoScrollInterval = null;
+onMounted(() => {
+  autoScrollInterval = startAutoScroll();
+});
+onBeforeMount(() => {
+  if (autoScrollInterval) clearInterval(autoScrollInterval);
+});
 </script>
 
 <style scoped>
@@ -328,37 +439,52 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(1.05);
 }
 
+/* SUGGEST PRODUCT SECTION - IMPROVED SLIDER */
 .suggest-product {
-  padding: 80px 20px;
+  padding: 80px 20px 60px;
   background: linear-gradient(135deg, var(--warm-beige) 0%, var(--secondary-gold) 100%);
+  text-align: center;
 }
 
 .suggest-product h2 {
   font-family: 'Playfair Display', serif;
   font-size: 2.2rem;
   font-weight: 600;
-  text-align: center;
-  margin-bottom: 50px;
   color: var(--text-primary);
-  letter-spacing: -0.01em;
+  margin-bottom: 40px;
+  letter-spacing: -0.02em;
 }
 
-.product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  max-width: 1200px;
+.suggest-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.product-list-wrapper {
+  overflow: hidden;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
+.product-list {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  gap: 30px;
+}
+
 .product-card {
+  flex: 0 0 auto;
+  width: 280px;
   background: white;
   border-radius: 20px;
-  padding: 24px;
-  text-align: center;
+  padding: 20px;
+  box-shadow: 0 8px 32px var(--shadow-soft);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 20px var(--shadow-soft);
-  border: 1px solid rgba(212, 175, 55, 0.1);
+  text-align: center;
 }
 
 .product-card:hover {
@@ -367,139 +493,205 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .product-img {
-  margin-bottom: 20px;
-  border-radius: 16px;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
   overflow: hidden;
+  margin-bottom: 16px;
   background: var(--soft-gray);
 }
 
 .product-img img {
   width: 100%;
-  height: 250px;
+  height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
+  transition: transform 0.3s ease;
 }
 
 .product-card:hover .product-img img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 .color-options {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  padding: 0 10px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .color-circle {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid var(--soft-gray);
   cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  box-shadow: 0 2px 8px var(--shadow-soft);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .color-circle:hover {
-  transform: scale(1.15);
-  box-shadow: 0 4px 16px var(--shadow-medium);
+  transform: scale(1.1);
+  border-color: var(--primary-gold);
 }
 
 .color-circle.active {
-  border: 3px solid var(--primary-gold);
-  box-shadow: 0 0 16px rgba(212, 175, 55, 0.4);
-  transform: scale(1.1);
-}
-
-.color-circle.active::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
-  background: var(--primary-gold);
-  border-radius: 50%;
-  opacity: 0.8;
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.3);
 }
 
 .product-name {
   margin-bottom: 12px;
 }
 
-.product-name a,
-.product-name router-link {
+.product-name a {
   color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
   font-size: 16px;
   transition: color 0.3s ease;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.3px;
+  display: block;
 }
 
-.product-name a:hover,
-.product-name router-link:hover {
+.product-name a:hover {
   color: var(--primary-gold);
 }
 
 .product-price {
   color: var(--primary-gold);
-  font-size: 18px;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.5px;
+  font-size: 18px;
+}
+
+.arrow-btn {
+  background: var(--primary-gold);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--shadow-soft);
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.arrow-btn:disabled {
+  background: #e0e0e0;
+  color: #aaa;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.arrow-btn:hover:not(:disabled) {
+  background: var(--soft-brown);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px var(--shadow-medium);
+}
+
+.arrow-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.arrow-btn:hover:not(:disabled) svg {
+  transform: translateX(2px);
+}
+
+.arrow-btn.left:hover:not(:disabled) svg {
+  transform: translateX(-2px);
+}
+
+/* Dots indicator */
+.dots-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: var(--primary-gold);
+  transform: scale(1.2);
+}
+
+.dot:hover {
+  background: var(--primary-gold);
 }
 
 /* Responsive Design */
-@media (max-width: 900px) {
-  .chain-jewelry {
-    gap: 40px;
-    padding: 40px 15px 30px;
+@media (max-width: 1400px) {
+  .product-list {
+    gap: 25px;
   }
-  
+  .product-card {
+    width: 260px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .product-list {
+    gap: 20px;
+  }
+  .product-card {
+    width: 240px;
+  }
+  .suggest-nav {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .product-card {
+    width: 280px;
+  }
+  .product-list {
+    gap: 15px;
+  }
+  .chain-jewelry {
+    gap: 60px;
+  }
   .left-highlight h2 {
     font-size: 2rem;
     margin-right: 30px;
-    margin-bottom: 30px;
-  }
-  
-  .right-highlight {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .left-col, .right-col {
-    flex-direction: row;
-    gap: 15px;
-    justify-content: center;
-  }
-  
-  .left-item img, .right-item img {
-    width: 250px;
-  }
-  
-  .suggest-product {
-    padding: 60px 15px;
-  }
-  
-  .suggest-product h2 {
-    font-size: 1.8rem;
-  }
-  
-  .product-list {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
   }
 }
 
 @media (max-width: 640px) {
+  .suggest-product {
+    padding: 60px 10px 40px;
+  }
+  
+  .suggest-product h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+  }
+  
+  .product-card {
+    width: 260px;
+  }
+  
+  .product-list {
+    gap: 10px;
+  }
+  
+  .arrow-btn {
+    width: 40px;
+    height: 40px;
+  }
+  
   .chain-jewelry {
     gap: 30px;
+    padding: 40px 10px 30px;
   }
   
   .chain-jewelry .item {
@@ -507,33 +699,42 @@ h1, h2, h3, h4, h5, h6 {
     padding: 15px;
   }
   
-  .chain-jewelry img {
-    max-width: 120px;
-  }
-  
-  .chain-jewelry a {
-    font-size: 13px;
-    margin-top: 12px;
+  .product-highlight {
+    flex-direction: column;
+    text-align: center;
   }
   
   .left-highlight h2 {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     margin-right: 0;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
   }
   
-  .left-col, .right-col {
-    flex-direction: column;
-    gap: 15px;
+  .right-highlight {
+    justify-content: center;
+  }
+  
+  .left-item img, .right-item img {
+    width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card {
+    width: 240px;
+    padding: 15px;
+  }
+  
+  .product-img {
+    height: 160px;
+  }
+  
+  .chain-jewelry {
+    gap: 20px;
   }
   
   .left-item img, .right-item img {
     width: 200px;
-  }
-  
-  .product-list {
-    grid-template-columns: 1fr;
-    gap: 20px;
   }
 }
 </style>

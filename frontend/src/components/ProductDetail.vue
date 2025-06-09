@@ -11,7 +11,7 @@
 
       <span class="product-price">{{ Number(productDetail.jewelry_price).toLocaleString() }}₫</span>
 
-      <!-- COLORS -->
+      <!-- COLORS --> 
       <div class="color-options">
         <span v-for="(color, index) in props.color_code"
               :key="index"
@@ -161,123 +161,187 @@ onMounted(() => {
 <style scoped>
 .product-container {
   display: flex;
-  max-width: 80%;
-  margin: 30px auto;
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  gap: 24px;
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 32px;
+  gap: 40px;
+}
+
+.product-image {
+  flex: 1;
 }
 
 .product-image img {
+  width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 12px;
   object-fit: cover;
-  
 }
 
 .product-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 5%;
-
+  gap: 20px;
 }
 
 .product-name {
-
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 8px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  line-height: 1.3;
 }
 
 .product-price {
-  font-size: 20px;
-  font-weight: 500;
-  color: #000;
-  margin-bottom: 16px;
-  display: inline-flex;
+  font-size: 24px;
+  font-weight: 700;
+  color: #e53e3e;
+  margin: 0;
 }
 
 .color-options {
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 12px;
+  align-items: center;
 }
 
 .color-circle {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 1px solid #ccc;
+  border: 3px solid #e2e8f0;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s ease;
 }
 
 .color-circle:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
+  border-color: #cbd5e0;
 }
 
 .color-circle.active {
-  border: 2px solid #6a1b9a;
-  box-shadow: 0 0 4px #6a1b9a;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+  transform: scale(1.1);
 }
 
 .size-options {
-  margin-bottom: 16px;
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.size-button button {
-  padding: 12px 12px;
-  border: 1px solid #999;
-  cursor: pointer;
-  background: white;
-  transition: background 0.2s;
-  font-size: 16px;
-  font-weight: bold;
+.size-button {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
+.size-button button {
+  padding: 12px 20px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #4a5568;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.size-button button:hover {
+  border-color: #cbd5e0;
+  background: #f7fafc;
 }
 
 .size-button button.active {
-  background: #373737;
+  background: #4299e1;
+  border-color: #4299e1;
   color: white;
 }
 
 .size-button p {
-  margin-top: 4px;
-  font-size: 14px;
-  color: #555;
+  font-size: 12px;
+  color: #718096;
+  margin: 0;
+  text-align: center;
 }
 
 .action-buttons {
-  gap: 12px;
-  margin-top: 50px;
-  display: inline-grid;
-  width: 70%;
-  height: 50px;
+  display: flex;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.buy-now,
+.add-to-cart {
+  flex: 1;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
 }
 
 .buy-now {
-  font-size: 16px;
-  background-color: black;
+  background: #4299e1;
   color: white;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
+}
+
+.buy-now:hover {
+  background: #3182ce;
+  transform: translateY(-1px);
 }
 
 .add-to-cart {
-  font-size: 16px;
-  background-color: white;
-  color: black;
-  padding: 10px 20px;
-  border: 2px solid black;
+  background: white;
+  color: #4299e1;
+  border: 2px solid #4299e1;
+}
 
-  cursor: pointer;
-  font-weight: bold;
+.add-to-cart:hover {
+  background: #4299e1;
+  color: white;
+}
+
+.add-to-cart:disabled {
+  background: #f7fafc;
+  color: #a0aec0;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.add-to-cart:disabled:hover {
+  background: #f7fafc;
+  color: #a0aec0;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-container {
+    flex-direction: column;
+    max-width: 95%;
+    padding: 24px;
+    gap: 24px;
+  }
+  
+  .product-name {
+    font-size: 24px;
+  }
+  
+  .product-price {
+    font-size: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
 }
 </style>

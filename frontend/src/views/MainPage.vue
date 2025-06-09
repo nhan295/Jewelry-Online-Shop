@@ -7,6 +7,11 @@
     v-if="!selectedSubcate && !searchProduct && !selectedProduct"/>
     <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>   <!--selectSub=5 <=> props.sub_id=5-->
     <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
+     <ProductDetail   v-if="selectedProduct"
+      :jewelry_id="selectedProduct.jewelry_id"
+      v-model:color_id="selectedProduct.color_id"  
+      :color_code="selectedProduct.color_code"/>
+    <PageFooter/>
  <!-- v-model để nhận ra sự thay đổi của props(color_id) -->
     
 
@@ -18,6 +23,8 @@ import MenuShow from '../components/MenuShow.vue';
 import UserHeader from '../components/UserHeader.vue';
 import ProductsList from '../components/ProductsList.vue';
 import SearchResult from '../components/SearchResult.vue';
+import ProductDetail from '../components/ProductDetail.vue';
+import PageFooter from '../components/PageFooter.vue';
 
 import MainProduct from '../components/MainProduct.vue';
 import {ref} from 'vue';
