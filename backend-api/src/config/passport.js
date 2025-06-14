@@ -1,6 +1,8 @@
 const passport = require('passport');
 const db = require('../config/db'); // đây là knex instance
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { sendWelcomeEmail } = require('../utils/mailer');
+
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -29,8 +31,11 @@ passport.use(new GoogleStrategy({
 
             const [insertedId] = await db('user').insert(newUser); // trả về mảng [id]
             newUser.user_id = insertedId;
-            return done(null, newUser);
+            user = newUser
         }
+            await sendWelcomeEmail(email, name);
+
+            return done(null, user);
 
     } catch (err) {
         return done(err);
