@@ -51,7 +51,7 @@
 
 <script setup>
 import {ref,onMounted,watch} from 'vue';
-
+ 
 const loading = ref(true);
 const error = ref(null);
 const productDetail = ref(null);

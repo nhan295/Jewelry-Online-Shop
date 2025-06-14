@@ -233,10 +233,10 @@ const getAllJew = async () => {
 }
 
 const emits = defineEmits(['show-product']);
-const selectedProduct = (jewelry_id, color_id, color_code) => {
+const selectedProduct = (jewelry_id, color_id, color_code) => {   // hiển thị chi tiết sản phẩm
   emits('show-product', {jewelry_id, color_id, color_code});
   console.log('Selected product:', { jewelry_id, color_id, color_code });
-  router.push('/product/detail');
+
 }
 
 // Slider functions
