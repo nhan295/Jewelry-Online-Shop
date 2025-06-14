@@ -19,7 +19,7 @@
         <div class="col-address">
             <h4>Địa chỉ cửa hàng</h4>   
             <p>Thọ hoà đông A, Xã Phú Tâm</p>
-            <p>Huyện Châu Thành, Sóc Tră</p>
+            <p>Huyện Châu Thành, Sóc Trăng</p>
             <p>Giờ mở cửa: 8:00 - 22:00</p>
             <div style="width: 100%; height: 80px; background: #e8e8e8; border-radius: 4px; margin: 12px 0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">
                 Bản đồ
