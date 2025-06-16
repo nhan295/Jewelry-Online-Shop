@@ -5,8 +5,7 @@ import MainPage from './views/MainPage.vue';
 import ProfilePage from './views/ProfilePage.vue';
 import BrowsePage from './views/BrowsePage.vue';
 import CartPage from './views/CartPage.vue';
-import ProductDetailPage from './views/ProductDetailPage.vue';
-import ProductListPage from './views/ProductListPage.vue'
+
 
 const routes = [
     {path: '/index', component: index},
@@ -14,8 +13,7 @@ const routes = [
     {path: '/userpage', component: MainPage},
     {path: '/profile', component: ProfilePage},
     {path: '/cart/:user_id',component: CartPage, props: true},
-    {path: '/product/detail',component: ProductDetailPage},
-    {path: '/product/category',component: ProductListPage}
+
 ];
 
 const router = createRouter({
