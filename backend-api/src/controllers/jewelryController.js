@@ -9,9 +9,9 @@ const getJewBySubCategory = async(req,res) =>{
     }
 };
 
-const getJewByCategory = async(req,res) =>{
+const getSubCateByCategory = async(req,res) =>{
     const{category} = req.params; //lay gia tri tu tham so url
-    const jewShow = await jewelryModel.getJewByCategory(category)
+    const jewShow = await jewelryModel.getSubCateByCategory(category)
 
     if(jewShow){
         res.json({message: jewShow})
@@ -64,10 +64,19 @@ const getAllJew = async(req,res) =>{
     }
 }
 
+const getJewByCategoryName = async(req,res)=> {
+    const {categoryName} = req.params
+    const jewelry = await jewelryModel.getJewByCategoryName(categoryName)
+    if(jewelry){
+        res.json({message: jewelry})
+    }
+}
+
 module.exports = {
     getJewBySubCategory,
-    getJewByCategory,
+    getSubCateByCategory,
     getJewById,
     searchJewByName,
-    getAllJew
+    getAllJew,
+    getJewByCategoryName
 }

@@ -2,7 +2,7 @@ const db = require('../config/db')
 
 const jewelryModel = {
 
-    getJewByCategory: (category) =>{ //Loc chi muc con thuoc categories
+    getSubCateByCategory: (category) =>{ //Loc chi muc con thuoc categories
         return db('categories')
         .select('sub_categories.sub_name','sub_categories.sub_id')
         .innerJoin('sub_categories','sub_categories.categories_id','categories.categories_id')
@@ -95,7 +95,36 @@ const jewelryModel = {
         })
         .groupBy('jewelry.jewelry_id', 'sub_categories.sub_name','color_code.color_id')
         .limit(10);
-    }
+    },
+
+    getJewByCategoryName: (categoryName) => {
+    return db('jewelry')
+        .select(
+            'jewelry.jewelry_name',
+            'jewelry.jewelry_id',
+            'sub_categories.sub_name',
+            'jewelry.jewelry_price',
+            'jewelry_img.image',
+            'jewelry_img.img_id',
+            'color_code.color_name',
+            'color_code.color_id',
+            'categories.categories_name'
+        )
+        .innerJoin('sub_categories', 'sub_categories.sub_id', 'jewelry.sub_id')
+        .innerJoin('categories', 'sub_categories.categories_id', 'categories.categories_id')
+        .innerJoin('color_code', 'color_code.jewelry_id', 'jewelry.jewelry_id')
+        .leftJoin('jewelry_img', function() {
+            this.on('jewelry_img.jewelry_id', '=', 'jewelry.jewelry_id')
+                .andOn('jewelry_img.color_id', '=', 'color_code.color_id');
+        })
+        .where('categories.categories_name', 'like', `%${categoryName}%`)
+        .groupBy(
+            'jewelry.jewelry_id',
+            'sub_categories.sub_name',
+            'color_code.color_id'
+          
+        );
+}
 
 }
 
