@@ -38,6 +38,11 @@
               <strong>Mobile</strong>
               <p>{{ userMobile }}</p>
             </div>
+
+            <div class="account-item">
+              <strong>Address</strong>
+              <p>{{ userAddress }}</p>
+            </div>
           </div>
         </div>
       
