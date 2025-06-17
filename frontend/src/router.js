@@ -5,6 +5,8 @@ import MainPage from './views/MainPage.vue';
 import ProfilePage from './views/ProfilePage.vue';
 import BrowsePage from './views/BrowsePage.vue';
 import CartPage from './views/CartPage.vue';
+import CollectionPage from './views/CollectionPage.vue'
+
 
 
 const routes = [
@@ -13,6 +15,7 @@ const routes = [
     {path: '/userpage', component: MainPage},
     {path: '/profile', component: ProfilePage},
     {path: '/cart/:user_id',component: CartPage, props: true},
+    {path: '/product/collection/:categoryName',component: CollectionPage}
 
 ];
 

@@ -11,7 +11,7 @@ module.exports.setup = (app)=>{
     router.get('/search/:jewelry_name', jewelryController.searchJewByName);
     router.get('/id/:jewelry_id/color/:color_id', jewelryController.getJewById);
     router.get('/all',jewelryController.getAllJew);
-    router.get('/category/:categoryName', jewelryController.getJewByCategoryName)
+    router.get('/collection/:categoryName', jewelryController.getJewByCategoryName)
 
 
 }
