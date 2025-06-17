@@ -6,19 +6,19 @@
   <div class="chain-jewelry">
     <div class="item">
       <img :src="vongtay" alt="Vòng tay" />
-      <a href="">VÒNG TAY</a>
+      <router-link :to="`/product/collection/vong`">VÒNG TAY</router-link>
     </div>
     <div class="item">
       <img :src="nhan" alt="Nhẫn" />
-      <a href="">NHẪN</a>
+      <router-link :to="`/product/collection/nhan`">NHẪN</router-link>
     </div>
     <div class="item">
       <img :src="hoatai" alt="Hoa tai" />
-      <a href="">HOA TAI</a>
+      <router-link :to="`/product/collection/hoatai`">HOA TAI</router-link>
     </div>
     <div class="item">
       <img :src="daychuyen" alt="Dây chuyền" />
-      <a href="">DÂY CHUYỀN</a>
+    <router-link :to="`/product/collection/daychuyen`">DÂY CHUYỀN</router-link>
     </div>
   </div>
 
