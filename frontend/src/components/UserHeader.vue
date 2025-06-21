@@ -85,8 +85,7 @@ const handleCartClick = () =>{
     return;
   }
   emit('get-user',user_id.value);
-  router.push(`/cart/${user_id.value}`)
-  console.log('clicked user_id:', user_id.value)
+  router.push(`/cart`)
 }
 
 const logout = async() =>{

@@ -5,7 +5,7 @@
       @select-category="handleCategory"/>   <!--lang nghe su kien select-category-->
       
       <MenuShow  @select-subcate = "handleSubcate" v-if="selectedCategory":category="selectedCategory"/>    <!--lưu trạng thái mục đã chọn-->
-      <MainProduct v-if="!selectedSubcate && !searchProduct && !selectedProduct && showMainProduct"/>
+      <!-- <MainProduct v-if="!selectedSubcate && !searchProduct && !selectedProduct && showMainProduct"/> -->
       <ProductsList @select-product="handleProductDetail" v-if="selectedSubcate":sub_id="selectedSubcate"/>   <!--selectSub=5 <=> props.sub_id=5-->
       <SearchResult v-if="searchProduct":jewelry_name="searchProduct"/>
       <ProductDetail   v-if="selectedProduct"
@@ -13,7 +13,8 @@
         v-model:color_id="selectedProduct.color_id"
         :color_code="selectedProduct.color_code"/>
        <!-- v-model để nhận ra sự thay đổi của props(color_id) -->
-      <ShowCart v-if="addCart":user_id="addCart"/>
+      <ShowCart v-if="addCart" :key="addCart" :user_id="addCart"  />
+
     </div>
 
 </template>
@@ -27,7 +28,7 @@ import SearchResult from '../components/SearchResult.vue';
 import ProductDetail from '../components/ProductDetail.vue';
 import MainProduct from '../components/MainProduct.vue';
 import ShowCart from '../components/ShowCart.vue';
-import {ref,watch} from 'vue';
+import {ref,watch,onMounted} from 'vue';
 
 const showMainProduct = ref(true);
 
@@ -66,13 +67,26 @@ const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 o
 };
 
 const addCart = ref(null);
+
 const handleAddCart = (user_id)=>{
+  console.log('User ID for cart:', user_id);
     addCart.value = user_id
     showMainProduct.value = false
 }
 watch(addCart, (val) => {
   console.log('addCart changed to:', val)
 })
+
+onMounted(() => {
+  const storedUser = localStorage.getItem('user');
+  if (storedUser) {
+    const parsed = JSON.parse(storedUser);
+    if (parsed.user_id) {
+      addCart.value = parsed.user_id; // ✅ gán user_id ngay khi mount
+      console.log('Khởi tạo addCart với user_id:', parsed.user_id);
+    }
+  }
+});
 
 </script>
 
