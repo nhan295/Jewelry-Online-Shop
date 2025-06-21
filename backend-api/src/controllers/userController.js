@@ -54,16 +54,13 @@ const login = async(req,res) =>{
 
         const getPassword = await userModel.getUserPass(username)
         const match = await bcrypt.compareSync(password, getPassword);
-     
-        console.log('Hashed password from DB:', getPassword);
-        console.log(' User input password:', password);
-        console.log('Compare result:', match);
+    
 
         if(!match){
             return res.status(401).json({message:'password does not match'})
         }
         else{
-            req.session.user = await userModel.getUserData(username)
+            req.session.user = await userModel.getUserData(username)  // session được lưu trữ trong req.session
             req.session.user_name = username
             res.status(200).json({message: req.session.user})
         }

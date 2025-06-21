@@ -14,7 +14,7 @@ const routes = [
     {path: '/', component: BrowsePage},
     {path: '/userpage', component: MainPage},
     {path: '/profile', component: ProfilePage},
-    {path: '/cart/:user_id',component: CartPage, props: true},
+    {path: '/cart',component: CartPage},
     {path: '/product/collection/:categoryName',component: CollectionPage}
 
 ];
