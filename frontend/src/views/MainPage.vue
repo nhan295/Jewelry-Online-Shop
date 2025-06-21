@@ -66,4 +66,3 @@ const handleProductDetail = ({jewelry_id, color_id,color_code})=>{  //nhận 1 o
 
 
 </script>
-
