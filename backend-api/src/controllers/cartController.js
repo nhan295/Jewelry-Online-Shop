@@ -20,22 +20,32 @@ const getCartData = async(req,res) =>{
     }
 };
 
-const addCart = async(req,res) =>{
-    try{
-        const {user_id,jewelry_id,color_id,size_id,quantity} = req.body;
-        const existCartItem = await cartModel.getCartItem(user_id,jewelry_id,color_id,size_id)
+const addCart = async (req, res) => {
+  try {
+    // Ưu tiên lấy user từ session hoặc passport
+    const user = req.user || req.session.user;
 
-        if(existCartItem){
-            await cartModel.updateCartQuantity(user_id,jewelry_id,size_id,color_id,quantity);
-            return res.status(200).json({message: 'Updated quantity item!'})
-        }
-        await cartModel.addCart(user_id,jewelry_id,color_id,size_id,quantity);
-        return res.status(200).json({message: 'Add cart successfully!'})
+    if (!user) {
+      return res.status(401).json({ message: "Bạn chưa đăng nhập" });
     }
-    catch(error){
-        console.error(error)
-        return res.status(500).json({message: 'Error to add cart item', error: error.message })
+
+    const user_id = user.user_id; // <-- Đây mới là giá trị đúng
+    const { jewelry_id, color_id, size_id, quantity } = req.body;
+
+    const existCartItem = await cartModel.getCartItem(user_id, jewelry_id, color_id, size_id);
+
+    if (existCartItem) {
+      await cartModel.updateCartQuantity(user_id, jewelry_id, size_id, color_id, quantity);
+      return res.status(200).json({ message: 'Updated quantity item!' });
     }
+
+    await cartModel.addCart(user_id, jewelry_id, color_id, size_id, quantity);
+    return res.status(200).json({ message: 'Add cart successfully!' });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error to add cart item', error: error.message });
+  }
 };
 
 const deleteCartItem = async(req,res) =>{
