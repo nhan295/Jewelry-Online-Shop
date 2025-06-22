@@ -20,7 +20,7 @@ passport.use(
         let user;
 
         if (users.length > 0) {
-          user = users[0];
+            return done(null, users[0]);
         } else {
           const newUser = {
             user_name: name,
