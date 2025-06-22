@@ -12,7 +12,7 @@ const cartModel = {
         'size.size_id',
         'size.size_number',
         'cart.quantity',
-        'jewelry_img.image'
+         db.raw(`CONCAT('./assets/image/', jewelry_img.image) as image`),
     )
     .leftJoin("jewelry", "cart.jewelry_id", "jewelry.jewelry_id")
     .leftJoin("color_code", "cart.color_id", "color_code.color_id")
