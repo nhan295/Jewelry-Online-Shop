@@ -5,19 +5,19 @@
 
   <div class="chain-jewelry">
     <div class="item">
-      <img :src="vongtay" alt="Vòng tay" />
+      <img src="/assets/banner/vongtay.webp" alt="Vòng tay" />
       <router-link :to="`/product/collection/vong`">VÒNG TAY</router-link>
     </div>
     <div class="item">
-      <img :src="nhan" alt="Nhẫn" />
+      <img src="/assets/banner/nhan.webp" alt="Nhẫn" />
       <router-link :to="`/product/collection/nhan`">NHẪN</router-link>
     </div>
     <div class="item">
-      <img :src="hoatai" alt="Hoa tai" />
+      <img src="/assets/banner/hoatai.webp" alt="Hoa tai" />
       <router-link :to="`/product/collection/hoatai`">HOA TAI</router-link>
     </div>
     <div class="item">
-      <img :src="daychuyen" alt="Dây chuyền" />
+      <img src="/assets/banner/daychuyen.webp" alt="Dây chuyền" />
     <router-link :to="`/product/collection/daychuyen`">DÂY CHUYỀN</router-link>
     </div>
   </div>
@@ -30,21 +30,21 @@
     <div class="right-highlight">
       <div class="left-col">
         <div class="left-item">
-          <img :src="block3" alt="Block 1" />
+          <img src="/assets/banner/block1.webp" alt="Block 1" />
           <a href="#"></a>
         </div>
         <div class="left-item">
-          <img :src="block1" alt="Block 3" />
+          <img src="/assets/banner/block3.webp" alt="Block 3" />
           <a href="#"></a>
         </div>
       </div>
       <div class="right-col">
         <div class="right-item">
-          <img :src="block2" alt="Block 2" />
+          <img src="/assets/banner/block4.webp" alt="Block 2" />
           <a href="#"></a>
         </div>
         <div class="right-item">
-          <img :src="block4" alt="Block 4" />
+          <img src="/assets/banner/block2.webp" alt="Block 4" />
           <a href="#"></a>
         </div>
       </div>
@@ -115,22 +115,16 @@
 <script setup>
 import { onBeforeMount, nextTick } from 'vue';
 import {ref, onMounted, computed} from 'vue';
-import vongtay from '../assets/banner/vongtay.webp'
-import nhan from '../assets/banner/nhan.webp'
-import hoatai from '../assets/banner/hoatai.webp'
-import daychuyen from '../assets/banner/daychuyen.webp'
-import block1 from '../assets/banner/block1.webp'
-import block2 from '../assets/banner/block2.webp'   
-import block3 from '../assets/banner/block3.webp'
-import block4 from '../assets/banner/block4.webp'
+
+
 import { useRouter } from 'vue-router';
 
-const router = useRouter();
+
 
 const bannerImg = [
-    '../src/assets/banner/banner1.webp',
-    '../src/assets/banner/banner2.webp',
-    '../src/assets/banner/banner3.webp'
+    '/assets/banner/banner1.webp',
+    '/assets/banner/banner2.webp',
+    '/assets/banner/banner3.webp'
 ]
 
 const currentBanner = ref(0)

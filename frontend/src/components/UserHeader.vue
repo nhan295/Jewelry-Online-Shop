@@ -35,7 +35,7 @@
               </div>
             </div>
             <!-- Cart -->
-            <div class="cart-icon" @click="handleCartClick">
+            <div class="cart-icon" @click="handleCartClick" >
               <i class="fas fa-shopping-bag"></i>
             </div>
           </div>
