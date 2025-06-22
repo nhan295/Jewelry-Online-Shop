@@ -15,7 +15,7 @@ router.get('/google/callback',
         failureRedirect: '/login'
     }),
     (req,res)=>{
-        req.session.user = req.user;    
+        req.session.user = req.user;
         res.redirect('http://localhost:5173/userpage');
     }
 );
