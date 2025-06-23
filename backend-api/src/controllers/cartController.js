@@ -22,14 +22,14 @@ const getCartData = async(req,res) =>{
 
 const addCart = async (req, res) => {
   try {
-    // Ưu tiên lấy user từ session hoặc passport
+    // lấy user từ session hoặc passport
     const user = req.user || req.session.user;
 
     if (!user) {
       return res.status(401).json({ message: "Bạn chưa đăng nhập" });
     }
 
-    const user_id = user.user_id; // <-- Đây mới là giá trị đúng
+    const user_id = user.user_id; 
     const { jewelry_id, color_id, size_id, quantity } = req.body;
 
     const existCartItem = await cartModel.getCartItem(user_id, jewelry_id, color_id, size_id);

@@ -12,7 +12,9 @@ module.exports.setup = (app)=>{
 router.get('/google/callback',
     passport.authenticate('google',{
         session: true,
-        failureRedirect: '/login'
+        failureRedirect: 'http://localhost:5173/index'
+        
+        
     }),
     (req,res)=>{
         req.session.user = req.user;
