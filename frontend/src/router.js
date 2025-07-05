@@ -10,8 +10,8 @@ import CollectionPage from './views/CollectionPage.vue'
 
 
 const routes = [
-    {path: '/index', component: index},
-    {path: '/', component: BrowsePage},
+    {path: '/', component: index},
+    // {path: '/', component: BrowsePage},
     {path: '/userpage', component: MainPage},
     {path: '/profile', component: ProfilePage},
     {path: '/cart',component: CartPage},
