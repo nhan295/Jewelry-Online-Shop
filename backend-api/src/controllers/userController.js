@@ -110,10 +110,30 @@ const logout = async(req,res) =>{
         res.status(200).json({message:'logged out'})
     })
 }
+
+const editProfile = async(req,res) =>{
+    const {user_id} = req.params
+    const {user_name,user_email,user_mobile,user_address} = req.body
+    try{
+    if(!user_id){
+        return res.status(401).json({message: "You haven't logged in yet"})
+    }
+    await userModel.editProfile(user_id,{
+        user_name,
+        user_email,
+        user_mobile,
+        user_address
+    })
+    return res.status(200).json({ message: "User profile updated successfully" });
+    }catch(err){
+        return res.status(500).json({message: 'User information cannot be edited'})
+    }
+}
 module.exports = {
     getUserData,
     register,
     login,
     changePass,
+    editProfile,
     logout
 }

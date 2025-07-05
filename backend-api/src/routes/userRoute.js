@@ -10,5 +10,6 @@ module.exports.setup = (app) =>{
     router.post('/register',userController.register) // req.body
     router.post('/login',userController.login)
     router.post('/logout',userController.logout)
+    router.put('/edit/profile/:user_id', userController.editProfile)
 
 }

@@ -52,6 +52,12 @@ const userModel = {
         .select('user_password')
         .where({ user_id: userId })
         .then(result => result.user_password)
+    },
+
+    editProfile: (user_id,data) =>{
+        return db('user')
+        .update(data)
+        .where({user_id: user_id})
     }
 
 
