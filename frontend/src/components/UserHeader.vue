@@ -4,7 +4,8 @@
     <div class="header">
       <div class="header-top">
         <div class="logo-hot">
-          <router-link to="/userpage" class="logo">XIES XIES</router-link>
+          <a href="/userpage" class="logo" @click.prevent="reloadPage">XIES XIES</a>
+
         </div>
         <div class="header-icons">
           <div class="search-container">
@@ -66,6 +67,10 @@ const user_id = ref(null);
 
 const router = useRouter();
 const jewelry_name = ref('');
+
+const reloadPage = () => {
+  window.location.href = "/userpage";
+};
 
 const activeCategory = ref(null);
 const emit = defineEmits(['select-category','search-input','get-user']);
