@@ -1,52 +1,120 @@
 <template>
   <div>
+    <!-- Hiển thị thông báo -->
+    <div v-if="message" class="message-alert" :class="{ 'error': message.includes('Lỗi') || message.includes('Failed') }">
+      {{ message }}
+      <button class="close-message" @click="message = ''">&times;</button>
+    </div>
+
     <div class="user_top">
       <div class="show_hello">
         <h1 class="hello">HELLO</h1>
       </div>
 
       <div class="show_name">
-        <h1>{{ userName }}</h1>
+        <h1>{{ userName || 'Chưa tải được tên' }}</h1>
       </div>
     </div>
 
     <div class="user_bottom">
-        <div class="account-info">
-          <div class="header">
-            <i class="fas fa-user-edit icon-bounce"></i>
-            <strong>THÔNG TIN TÀI KHOẢN</strong>
-            <a class="view-all" href="#">Chỉnh sửa</a>
+      <div class="account-info">
+        <div class="header">
+          <i class="fas fa-user-edit icon-bounce"></i>
+          <strong>THÔNG TIN TÀI KHOẢN</strong>
+          <a class="view-all" href="#" @click.prevent="openEditForm">Chỉnh sửa</a>
+        </div>
+        <hr class="divider">
+        <div class="account-grid">
+          <div class="account-item">
+            <strong>Username</strong>
+            <p>{{ userName || 'Đang tải...' }}</p>
           </div>
-          <hr class="divider">
-          <div class="account-grid">
-            <div class="account-item">
-              <strong>Username</strong>
-              <p>{{ userName }}</p>
-            </div>
 
-            <div class="account-item">
-              <strong>Date Created</strong>
-              <p>{{ userCreated }}</p>
-            </div>
+          <div class="account-item">
+            <strong>Date Created</strong>
+            <p>{{ formatDate(userCreated) || 'Đang tải...' }}</p>
+          </div>
 
-            <div class="account-item">
-              <strong>Email</strong>
-              <p>{{ userEmail }}</p>
-            </div>
+          <div class="account-item">
+            <strong>Email</strong>
+            <p>{{ userEmail || 'Đang tải...' }}</p>
+          </div>
 
-            <div class="account-item">
-              <strong>Mobile</strong>
-              <p>{{ userMobile }}</p>
-            </div>
+          <div class="account-item">
+            <strong>Mobile</strong>
+            <p>{{ userMobile || 'Đang tải...' }}</p>
+          </div>
 
-            <div class="account-item">
-              <strong>Address</strong>
-              <p>{{ userAddress }}</p>
-            </div>
+          <div class="account-item">
+            <strong>Address</strong>
+            <p>{{ userAddress || 'Đang tải...' }}</p>
           </div>
         </div>
-      
+      </div>
 
+      <!-- Popup Edit Form -->
+      <div v-if="showEditForm" class="popup-overlay" @click="closePopup">
+        <div class="edit-user-form" @click.stop>
+          <!-- Nút đóng -->
+          <button class="close-popup" @click="closePopup">&times;</button>
+          
+          <!-- Tiêu đề -->
+          <h2 class="popup-title">Chỉnh sửa thông tin</h2>
+          
+          <!-- Form -->
+          <form @submit.prevent="handleEditUser">
+            <div class="form-group">
+              <label for="username">Tên người dùng</label>
+              <input 
+                id="username"
+                type="text"
+                v-model="editForm.userName"
+                required
+                placeholder="Nhập tên người dùng">
+            </div>
+            
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input 
+                id="email"
+                type="email"
+                v-model="editForm.userEmail"
+                required
+                placeholder="Nhập email">
+            </div>
+            
+            <div class="form-group">
+              <label for="mobile">Số điện thoại</label>
+              <input 
+                id="mobile"
+                type="tel" 
+                v-model="editForm.userMobile"
+                required
+                placeholder="Nhập số điện thoại">
+            </div>
+            
+            <div class="form-group">
+              <label for="address">Địa chỉ</label>
+              <input 
+                id="address"
+                type="text"
+                v-model="editForm.userAddress"
+                required
+                placeholder="Nhập địa chỉ">
+            </div>
+
+            <!-- Buttons -->
+            <div class="form-buttons">
+              <button type="button" class="cancel-btn" @click="closePopup">
+                Hủy
+              </button>
+              <button type="submit" :class="{ loading: isSubmitting }" :disabled="isSubmitting">
+                {{ isSubmitting ? 'Đang lưu...' : 'Lưu thông tin' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
       
       <div class="address-box">
         <div class="header">
@@ -60,14 +128,11 @@
         <!-- Danh sách địa chỉ -->
         <div class="address-item">
           <div>
-            <strong>{{ userName }} - {{ userMobile }}</strong>
-            <div>, Vietnam</div>
+            <strong>{{ userName || 'Tên người dùng' }} - {{ userMobile || 'Số điện thoại' }}</strong>
+            <div>{{ userAddress || 'Địa chỉ' }}, Vietnam</div>
             <div class="label">Nhà riêng</div>
           </div>
           <span class="default-tag">Mặc định</span>
-          <button class="edit-btn">
-            <i class="fa fa-pen"></i>
-          </button>
         </div>
 
         <!-- Thêm địa chỉ mới -->
@@ -81,43 +146,193 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-const message = ref("");
+import { ref, onMounted, onUnmounted } from "vue";
 
+// Message và loading states
+const message = ref("");
+const isSubmitting = ref(false);
+
+// User data refs
+const userId = ref(null);
 const userName = ref(null);
 const userEmail = ref(null);
 const userAddress = ref(null);
 const userMobile = ref(null);
 const userCreated = ref(null);
 
+// Popup control
+const showEditForm = ref(false);
+
+// Edit form data - tách riêng để không ảnh hưởng đến display data
+const editForm = ref({
+  userName: '',
+  userEmail: '',
+  userMobile: '',
+  userAddress: ''
+});
+
+// Tự động ẩn message sau 5 giây
+const autoHideMessage = () => {
+  if (message.value) {
+    setTimeout(() => {
+      message.value = '';
+    }, 5000);
+  }
+};
+
+const formatDate = (date)=>{
+  if(!date) return 'Đang tải...'
+  return new Date(date).toLocaleDateString('vi-VN')
+}
+// Lấy dữ liệu user
 const getUserData = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/v1/user/", {
       method: "GET",
       credentials: "include",
     });
+    
+    if (response.status === 401) {
+      message.value = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
+      autoHideMessage();
+      // Có thể chuyển hướng đến trang đăng nhập
+      // window.location.href = '/login';
+      return;
+    }
+    
     const data = await response.json();
+    console.log('API Response:', data);
 
     if (response.ok) {
-      userName.value = data.user.user_name;
-      userEmail.value = data.user.user_email;
-      userAddress.value = data.user.user_address;
-      userMobile.value = data.user.user_mobile;
-      userCreated.value = data.user.date_created;
+      // Xử lý nhiều format response khác nhau
+      const user = data.user || data.value || data;
+      
+      if (user) {
+        userId.value = user.user_id;
+        userName.value = user.user_name;
+        userEmail.value = user.user_email;
+        userAddress.value = user.user_address;
+        userMobile.value = user.user_mobile;
+        userCreated.value = user.date_created;
+      } else {
+        message.value = "Không thể tải thông tin người dùng";
+        autoHideMessage();
+      }
+    } else {
+      message.value = `Lỗi: ${data.message || 'Không thể tải thông tin người dùng'}`;
+      autoHideMessage();
     }
   } catch (err) {
-    message.value = "Failed to receiving user data";
-    console.error(err);
+    message.value = "Lỗi kết nối đến server";
+    console.error('Error fetching user data:', err);
+    autoHideMessage();
   }
 };
 
+// Mở popup edit
+const openEditForm = () => {
+  // Copy dữ liệu hiện tại vào form edit
+  editForm.value = {
+    userName: userName.value || '',
+    userEmail: userEmail.value || '',
+    userMobile: userMobile.value || '',
+    userAddress: userAddress.value || ''
+  };
+  
+  showEditForm.value = true;
+  document.body.style.overflow = 'hidden';
+};
+
+// Đóng popup
+const closePopup = () => {
+  showEditForm.value = false;
+  document.body.style.overflow = 'auto';
+  
+  // Reset form
+  editForm.value = {
+    userName: '',
+    userEmail: '',
+    userMobile: '',
+    userAddress: ''
+  };
+};
+
+// Xử lý submit form edit
+const handleEditUser = async () => {
+  if (!userId.value) {
+    message.value = "Không tìm thấy ID người dùng";
+    autoHideMessage();
+    return;
+  }
+
+  isSubmitting.value = true;
+  
+  try {
+    const response = await fetch(`http://localhost:3000/api/v1/user/edit/profile/${userId.value}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        user_name: editForm.value.userName,
+        user_email: editForm.value.userEmail,
+        user_mobile: editForm.value.userMobile,
+        user_address: editForm.value.userAddress
+      })
+    });
+    
+    const data = await response.json();
+
+    if (response.ok) {
+      message.value = 'Cập nhật thông tin thành công!';
+      
+      // Cập nhật dữ liệu display
+      userName.value = editForm.value.userName;
+      userEmail.value = editForm.value.userEmail;
+      userMobile.value = editForm.value.userMobile;
+      userAddress.value = editForm.value.userAddress;
+      
+      // Đóng popup
+      closePopup();
+      
+      // Tải lại dữ liệu từ server để đảm bảo đồng bộ
+      await getUserData();
+    } else {
+      message.value = `Lỗi: ${data.message || 'Không thể cập nhật thông tin'}`;
+    }
+  } catch (err) {
+    message.value = 'Lỗi kết nối. Vui lòng thử lại.';
+    console.error('Error updating user:', err);
+  } finally {
+    isSubmitting.value = false;
+    autoHideMessage();
+  }
+};
+
+// Thêm địa chỉ mới (placeholder)
 const addNew = () => {
-  // Add your logic here
+  message.value = "Tính năng đang được phát triển";
+  autoHideMessage();
   console.log("Add new address");
 };
 
+// Xử lý phím ESC
+const handleKeydown = (e) => {
+  if (e.key === 'Escape' && showEditForm.value) {
+    closePopup();
+  }
+};
+
+// Lifecycle hooks
 onMounted(() => {
   getUserData();
+  document.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown);
+  document.body.style.overflow = 'auto';
 });
 </script>
 
@@ -129,6 +344,215 @@ onMounted(() => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Message Alert */
+.message-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  z-index: 1001;
+  animation: slideInRight 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.message-alert.error {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  box-shadow: 0 4px 16px rgba(244, 67, 54, 0.3);
+}
+
+.close-message {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-message:hover {
+  opacity: 0.7;
+}
+
+/* Popup Overlay */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Edit Form Popup */
+.edit-user-form {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideInScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close-popup {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.close-popup:hover {
+  background: #f0f0f0;
+  color: #333;
+  transform: rotate(90deg);
+}
+
+.popup-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: #333;
+  text-align: center;
+  border-bottom: 2px solid #007acc;
+  padding-bottom: 12px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.edit-user-form label {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.edit-user-form input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.edit-user-form input:focus {
+  outline: none;
+  border-color: #007acc;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
+  transform: translateY(-2px);
+}
+
+.edit-user-form input:hover {
+  border-color: #007acc;
+  background: white;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.edit-user-form button[type="submit"] {
+  background: linear-gradient(135deg, #007acc, #0056b3);
+  color: white;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.edit-user-form button[type="submit"]:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3, #003d82);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 122, 204, 0.3);
+}
+
+.edit-user-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  color: white;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #5a6268, #495057);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+}
+
+/* Loading state */
+.edit-user-form button[type="submit"].loading {
+  position: relative;
+  color: transparent;
+}
+
+.edit-user-form button[type="submit"].loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #ffffff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Original styles */
 strong {
   font-size: 20px;
   font-family: Arial, sans-serif;
@@ -139,7 +563,6 @@ strong {
   animation: slideUp 0.8s ease-out;
 }
 
-/* Header animations */
 .show_hello {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 20px; 
@@ -181,7 +604,6 @@ strong {
   background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
 }
 
-/* Account info section */
 .account-info {
   width: 35%;
   margin: 0 auto;
@@ -230,7 +652,6 @@ strong {
   color: #616161;
 }
 
-/* Address section */
 .address-box {
   border: 1px solid #ccc;
   padding: 20px;
@@ -303,7 +724,7 @@ strong {
   border-radius: 20px;
   position: absolute;
   top: 12px;
-  right: 50px;
+  right: 12px;
   animation: pulse 2s infinite;
 }
 
@@ -373,7 +794,6 @@ p {
   font-weight: 700;
 }
 
-/* Icon animations */
 .icon-bounce {
   animation: bounce 2s infinite;
 }
@@ -383,6 +803,37 @@ p {
 }
 
 /* Keyframe animations */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes fadeInLeft {
   from {
     opacity: 0;
@@ -436,15 +887,6 @@ p {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
-  }
-  100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
-  }
-}
-
 @keyframes bounce {
   0%, 20%, 50%, 80%, 100% {
     transform: translateY(0);
@@ -484,6 +926,15 @@ p {
   }
 }
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .user_bottom {
@@ -497,6 +948,22 @@ p {
   .address-box {
     margin-right: 0;
     margin-top: 20px;
+  }
+  
+  .edit-user-form {
+    padding: 24px;
+    margin: 20px;
+    max-width: none;
+    width: calc(100% - 40px);
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+  }
+  
+  .edit-user-form button[type="submit"],
+  .cancel-btn {
+    width: 100%;
   }
 }
 </style>
