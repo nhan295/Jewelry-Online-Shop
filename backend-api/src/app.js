@@ -8,6 +8,7 @@ const userRoute = require('./routes/userRoute');
 const jewelryRoute = require('./routes/jewelryRoute');
 const cartRoute = require('./routes/cartRoute');
 const authRoute = require('./routes/authRoute');
+const addressRoute = require('./routes/addressRoute');
 
 const app = express();
 const session = require('express-session');
@@ -39,5 +40,6 @@ userRoute.setup(app)
 jewelryRoute.setup(app)
 cartRoute.setup(app)
 authRoute.setup(app)
+addressRoute.setup(app)
 
 module.exports = app
