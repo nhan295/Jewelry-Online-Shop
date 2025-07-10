@@ -142,14 +142,23 @@
         <!-- Danh sách địa chỉ -->
         <div class="address-item">
           <div>
-            <strong
-              >{{ userName || "Tên người dùng" }} -
-              {{ userMobile || "Số điện thoại" }}</strong
-            >
+            <strong>{{ userName || "Tên người dùng" }} - {{ userMobile || "Số điện thoại" }}</strong>
             <div>{{ userAddress || "Địa chỉ" }}, Vietnam</div>
             <div class="label">Nhà riêng</div>
           </div>
           <span class="default-tag">Mặc định</span>
+        </div>
+
+        <!-- danh sách địa chỉ -->
+        <div class="address-list-container">
+          <div class="address-list-content" v-for="list in addressList"
+          :key="list.record_id">
+            <p><strong>Tên người dùng:</strong> {{ list.record_username }}</p>
+            <p><strong>Số điện thoại:</strong> {{ list.record_mobile }}</p>
+            <p><strong>Địa chỉ:</strong> {{ list.street_address }}, {{ list.ward_name }}, {{ list.province_name }}</p>
+            <div class="label">{{ list.address_type }}</div>
+          </div>
+
         </div>
 
         <!-- Thêm địa chỉ mới -->
@@ -194,23 +203,22 @@
               </div>
 
               <div class="form-group">
-               
-                <input
-                  type="text"
-                  v-model="editForm.recordProvince"
-                  placeholder="Tỉnh/Thành phố"
-                  required
-                />
+               <select v-model="selectedProvince" required @change="getWardByProvince">
+                <option value="" disabled>Chọn tỉnh/thành phố</option>
+                <option v-for="province in provinces" 
+                :key="province.province_id" 
+                :value="province.province_id">{{ province.province_name }}</option>
+               </select>
               </div>
 
               <div class="form-group">
-               
-                <input
-                  type="text"
-                  v-model="editForm.recordWard"
-                  placeholder="Phường/Xã"
-                  required
-                />
+               <select v-model="selectedWard" required>
+                <option value="" disabled>Chọn xã/phường</option>
+                <option v-for="ward in wards"
+                :key="ward.ward_id"
+                :value="ward.ward_id">{{ ward.ward_name }}</option>
+               </select>
+                
               </div>
 
               <div class="form-group">
@@ -221,6 +229,20 @@
                   placeholder="Tên đường, số nhà"
                   required
                 />
+              </div>
+
+              <div class="form-group">
+                <label for="">Văn phòng</label>
+                <input type="radio"
+                v-model="editForm.addressType"
+                value="Văn phòng">
+              </div>
+
+              <div class="form-group">
+                <label for="">Nhà riêng</label>
+                <input type="radio"
+                v-model="editForm.addressType"
+                value="Nhà riêng">
               </div>
 
               <div class="form-buttons">
@@ -261,6 +283,15 @@ const userAddress = ref(null);
 const userMobile = ref(null);
 const userCreated = ref(null);
 
+const provinces = ref([]);
+const wards = ref([]);
+//giá trị của province và ward được chọn
+const selectedProvince = ref('');
+const selectedWard = ref('');
+
+//danh sách địa chỉ
+const addressList = ref([]);
+
 // Popup control
 const showEditForm = ref(false);
 const showAddressForm = ref(false);
@@ -276,6 +307,7 @@ const editForm = ref({
   recordProvince: "",
   recordWard: "",
   streetAddress: "",
+  addressType: ""
 });
 
 // Tự động ẩn message sau 5 giây
@@ -433,26 +465,78 @@ const handleEditUser = async () => {
 const getProvince = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/v1/address/provinces");
-  } catch (err) {}
+    if(res.ok){
+      const data = await res.json()
+      provinces.value = data
+      console.log('Provinces list:',data)
+    }else{
+      console.error('Failed to fetch province')
+    }
+  } catch (err) {
+      console.error("Error fetching provinces:", err);
+  }
 };
 
 const getWardByProvince = async () => {
   try {
+    
     const res = await fetch(
-      `http://localhost:3000/api/v1/address/${province_id}/ward`
-    );
-  } catch {}
+      `http://localhost:3000/api/v1/address/${selectedProvince.value}/wards`);
+      if(res.ok){
+        const data = await res.json()
+        console.log('Ward list',data)
+        wards.value = data
+      }else{
+        console.error('Failed to fetch ward')
+      }
+  } catch(err) {
+    console.error("Error fetching ward:", err);
+  }
 };
 
-// Thêm địa chỉ mới (placeholder)
+// Thêm địa chỉ mới 
 const handleNewAddress = async () => {
   try {
     const res = await fetch(
-      `http://localhost:3000/api/v1/address/add/${userId}`
-    );
-  } catch (err) {}
+      `http://localhost:3000/api/v1/address/add/${userId.value}`,
+    {
+        method: 'POST',
+        headers: {"Content-Type":"application/json"},
+        credentials: "include",
+        body: JSON.stringify({
+          record_username: editForm.value.recordUsername,
+          record_mobile: editForm.value.recordMobile,
+          province_id: selectedProvince.value,
+          ward_id: selectedWard.value,
+          street_address: editForm.value.streetAddress,
+          address_type: editForm.value.addressType
+        })
+      });
+      const data = await res.json()
+      if(res.ok){
+        message.value = 'Thêm địa chỉ mới thành công'
+      }else{
+         message.value = `Lỗi: ${data.message || "Không thể thêm địa chỉ"}`;
+      }
+  } catch (err) {
+    console.log('Lỗi khi thêm địa chỉ',err)
+  }
 };
 
+//lấy danh sách địa chỉ
+const getAddressList = async()=>{
+  try{
+    const list = await fetch(`http://localhost:3000/api/v1/address/list/${userId.value}`)
+    if(list){
+      addressList.value = await list.json();
+      console.log(`Danh sách địa chỉ của user ${userId.value}:`,addressList.value)
+    }else{
+      console.log('Không tải được danh sách địa chỉ')
+    }
+  }catch(err){
+    console.log('Lỗi khi tải danh sách địa chỉ',err)
+  }
+}
 // Xử lý phím ESC
 const handleKeydown = (e) => {
   if (e.key === "Escape" && showEditForm.value) {
@@ -461,8 +545,10 @@ const handleKeydown = (e) => {
 };
 
 // Lifecycle hooks
-onMounted(() => {
-  getUserData();
+onMounted(async() => {
+  await getUserData();
+  getProvince();
+  getAddressList();
   document.addEventListener("keydown", handleKeydown);
 });
 
@@ -477,7 +563,7 @@ onUnmounted(() => {
 
 /* Global smooth transitions */
 * {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 /* Message Alert */
@@ -486,35 +572,34 @@ onUnmounted(() => {
   top: 20px;
   right: 20px;
   padding: 12px 20px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #4caf50, #45a049);
+  border-radius: 6px;
+  background: #4caf50;
   color: white;
-  font-weight: 600;
-  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 1001;
-  animation: slideInRight 0.3s ease-out;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
 .message-alert.error {
-  background: linear-gradient(135deg, #f44336, #d32f2f);
-  box-shadow: 0 4px 16px rgba(244, 67, 54, 0.3);
+  background: #f44336;
 }
 
 .close-message {
   background: none;
   border: none;
   color: white;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
   padding: 0;
   line-height: 1;
 }
 
 .close-message:hover {
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 /* Popup Overlay */
@@ -524,123 +609,102 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.4);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 0.3s ease-out;
 }
 
 /* Edit Form Popup */
 .edit-user-form {
   background: white;
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: 8px;
+  padding: 24px;
   width: 90%;
-  max-width: 500px;
+  max-width: 480px;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  animation: slideInScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transform-origin: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   max-height: 90vh;
   overflow-y: auto;
 }
 
 .close-popup {
   position: absolute;
-  top: 16px;
-  right: 20px;
+  top: 12px;
+  right: 16px;
   background: none;
   border: none;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
   color: #666;
-  padding: 8px;
+  padding: 4px;
   border-radius: 50%;
-  transition: all 0.3s ease;
 }
 
 .close-popup:hover {
   background: #f0f0f0;
   color: #333;
-  transform: rotate(90deg);
 }
 
 .popup-title {
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
   color: #333;
   text-align: center;
-  border-bottom: 2px solid #007acc;
   padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .edit-user-form label {
   display: block;
-  font-weight: 600;
-  color: #333;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
-.edit-user-form input {
+.edit-user-form input, .edit-user-form select {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  background: #f9f9f9;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
   box-sizing: border-box;
 }
 
-.edit-user-form input:focus {
+.edit-user-form input:focus, .edit-user-form select:focus {
   outline: none;
   border-color: #007acc;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
-  transform: translateY(-2px);
-}
-
-.edit-user-form input:hover {
-  border-color: #007acc;
-  background: white;
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.1);
 }
 
 .form-buttons {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: flex-end;
-  margin-top: 24px;
+  margin-top: 20px;
 }
 
 .edit-user-form button[type="submit"] {
-  background: linear-gradient(135deg, #007acc, #0056b3);
+  background: #007acc;
   color: white;
-  padding: 14px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .edit-user-form button[type="submit"]:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0056b3, #003d82);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 122, 204, 0.3);
+  background: #0056b3;
 }
 
 .edit-user-form button[type="submit"]:disabled {
@@ -649,23 +713,18 @@ onUnmounted(() => {
 }
 
 .cancel-btn {
-  background: linear-gradient(135deg, #6c757d, #5a6268);
+  background: #6c757d;
   color: white;
-  padding: 14px 24px;
+  padding: 10px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .cancel-btn:hover {
-  background: linear-gradient(135deg, #5a6268, #495057);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+  background: #5a6268;
 }
 
 /* Loading state */
@@ -679,398 +738,340 @@ onUnmounted(() => {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 20px;
-  height: 20px;
-  margin: -10px 0 0 -10px;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
   border: 2px solid #ffffff;
   border-top: 2px solid transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
-/* Original styles */
+/* Main Layout */
 strong {
-  font-size: 20px;
+  font-size: 16px;
   font-family: Arial, sans-serif;
+  font-weight: 600;
 }
 
 .user_bottom {
   display: flex;
-  animation: slideUp 0.8s ease-out;
+  gap: 20px;
+  justify-content: center;
 }
 
 .show_hello {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 20px;
-  color: aliceblue;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  color: white;
   padding-top: 50px;
   padding-left: 48px;
-  animation: fadeInLeft 1s ease-out;
 }
 
 .show_name {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 20px;
-  color: aliceblue;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  color: white;
   padding-left: 48px;
-  animation: fadeInLeft 1.2s ease-out;
 }
 
 .hello {
-  animation: glow 2s ease-in-out infinite alternate;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .user_top {
-  height: 260px;
+  height: 200px;
   margin-top: 3px;
-  font-size: 25px;
-  font-weight: bold;
-  background: linear-gradient(135deg, rgb(151, 151, 151), rgb(120, 120, 120));
+  background: linear-gradient(135deg, #6c757d, #495057);
   position: relative;
-  overflow: hidden;
-}
-
-.user_top::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  border-radius: 8px;
 }
 
 .account-info {
   width: 35%;
-  margin: 0 auto;
-  padding: 24px;
-  border: 1px solid #c6c6c6;
+  height: fit-content;
+  padding: 20px;
+  border: 1px solid #ddd;
   background-color: white;
-  margin-top: 5%;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(10px);
-  animation: slideInLeft 0.8s ease-out;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .account-info:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .account-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
+  gap: 12px 16px;
   font-size: 14px;
-  color: rgb(0, 0, 0);
+  color: #333;
 }
 
 .account-item {
   padding: 12px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-left: 4px solid transparent;
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  background: #f8f9fa;
+  border-left: 3px solid #e9ecef;
 }
 
 .account-item:hover {
   border-left-color: #007acc;
-  transform: translateX(8px);
-  background: linear-gradient(135deg, #fff, #f1f3f4);
-  box-shadow: 0 4px 12px rgba(0, 122, 204, 0.15);
+  background: #fff;
 }
 
 .account-grid strong {
   display: block;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #616161;
+  color: #555;
+  font-size: 12px;
 }
 
 .address-box {
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   padding: 20px;
   width: 100%;
   max-width: 600px;
   font-family: Arial, sans-serif;
-  margin-top: 5%;
-  margin-right: 10%;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  animation: slideInRight 0.8s ease-out;
+  margin-top: 20px;
+  margin-right: 20px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .address-box:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 20px;
+  font-size: 16px;
   margin-bottom: 16px;
+  font-weight: 600;
 }
 
 .view-all {
   margin-left: auto;
-  font-weight: bold;
-  color: black;
+  font-weight: 500;
+  color: #007acc;
   text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-  transition: all 0.3s ease;
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: #f8f9fa;
+  font-size: 13px;
 }
 
 .view-all:hover {
-  background: linear-gradient(135deg, #2196f3, #1976d2);
-  color: white;
-  transform: scale(1.05);
+  background: #e9ecef;
   text-decoration: none;
 }
 
 .address-item {
-  border: 1px solid #ddd;
+  border: 1px solid #eee;
   padding: 12px;
   margin: 10px 0;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   position: relative;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  background: #fff;
 }
 
 .address-item:hover {
-  transform: translateX(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-color: #007acc;
 }
 
 .default-tag {
-  background: linear-gradient(135deg, #d9f2ff, #b3e5fc);
+  background: #e3f2fd;
   color: #007acc;
-  font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 20px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
   position: absolute;
   top: 12px;
   right: 12px;
-  animation: pulse 2s infinite;
 }
 
 .label {
   color: #d94f4f;
-  font-weight: bold;
+  font-weight: 500;
   margin-top: 4px;
+  font-size: 12px;
 }
 
 .edit-btn {
-  background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+  background: #f5f5f5;
   border: none;
   cursor: pointer;
   position: absolute;
   top: 10px;
   right: 10px;
-  padding: 8px;
+  padding: 6px;
   border-radius: 50%;
-  transition: all 0.3s ease;
 }
 
 .edit-btn:hover {
-  background: linear-gradient(135deg, #2196f3, #1976d2);
-  color: white;
-  transform: rotate(180deg) scale(1.1);
+  background: #e9ecef;
 }
 
 .add-new {
-  border: 2px dashed #aaa;
+  border: 2px dashed #ccc;
   padding: 16px;
   text-align: center;
   cursor: pointer;
-  font-weight: bold;
-  color: #000;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #f8f9fa, #ffffff);
-  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #666;
+  border-radius: 6px;
+  background: #f8f9fa;
+  font-size: 14px;
 }
 
 .add-new:hover {
   border-color: #007acc;
-  background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
-  transform: scale(1.02);
+  background: #fff;
   color: #007acc;
 }
 
 .add-new i {
   margin-right: 8px;
-  transition: transform 0.3s ease;
-}
-
-.add-new:hover i {
-  transform: rotate(90deg);
 }
 
 .divider {
   border: none;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #007acc, transparent);
+  height: 1px;
+  background: #eee;
   margin: 16px 0;
-  animation: glow 2s ease-in-out infinite alternate;
 }
 
 p {
-  font-size: 16px;
-  font-family: sans-serif;
-  font-weight: 700;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  font-weight: 400;
+  margin: 6px 0;
 }
 
-.icon-bounce {
-  animation: bounce 2s infinite;
+/* Address Form Popup */
+.address-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 16px;
+  overflow-y: auto;
 }
 
-.icon-pulse {
-  animation: iconPulse 2s infinite;
+.address-form-container {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
 }
 
-/* Keyframe animations */
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.address-form-container h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.address-form-container input,
+.address-form-container select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background: #fff;
+  box-sizing: border-box;
 }
 
-@keyframes slideInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.8) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+.address-form-container input:focus,
+.address-form-container select:focus {
+  border-color: #007acc;
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.1);
+  outline: none;
 }
 
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+button[type="submit"] {
+  background: #007acc;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+button[type="submit"]:hover:not(:disabled) {
+  background: #0056b3;
 }
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(100px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+button.loading::after {
+  content: "";
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  margin-left: 8px;
+  animation: spin 1s linear infinite;
 }
 
-@keyframes glow {
-  from {
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  }
-  to {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-  }
+/* Address List */
+.address-list-container {
+  margin-top: 16px;
 }
 
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
+.address-list-content {
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
 }
 
-@keyframes iconPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+.address-list-content p {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 6px 0;
+  color: #333;
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
+.address-list-content p strong {
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+  color: #555;
 }
 
+/* Animations */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -1080,26 +1081,28 @@ p {
   }
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .user_bottom {
     flex-direction: column;
+    gap: 16px;
   }
 
   .account-info {
-    width: 90%;
+    width: 100%;
+    margin-right: 0;
   }
 
   .address-box {
     margin-right: 0;
-    margin-top: 20px;
+    margin-top: 16px;
   }
 
   .edit-user-form {
-    padding: 24px;
-    margin: 20px;
+    padding: 20px;
+    margin: 16px;
     max-width: none;
-    width: calc(100% - 40px);
+    width: calc(100% - 32px);
   }
 
   .form-buttons {
@@ -1110,185 +1113,25 @@ p {
   .cancel-btn {
     width: 100%;
   }
-}
 
-/* Overlay toàn màn hình, nền mờ */
-.address-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 16px;
-  overflow-y: auto;
-  animation: fadeIn 0.3s ease;
-}
-
-/* Container form popup */
-.address-form-container {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-  position: relative;
-  transform-origin: center;
-  animation: slideInScale 0.4s ease-out;
-}
-
-/* Nút đóng */
-.close-popup {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #555;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.close-popup:hover {
-  transform: rotate(90deg);
-  color: #000;
-}
-
-/* Nhóm input */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.address-form-container label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #333;
-}
-
-.address-form-container input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 16px;
-  background: #f9f9f9;
-  transition: all 0.3s ease;
-}
-
-.address-form-container input:focus {
-  border-color: #007acc;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.15);
-  outline: none;
-}
-
-/* Buttons */
-.form-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.cancel-btn {
-  background: linear-gradient(135deg, #6c757d, #5a6268);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-
-.cancel-btn:hover {
-  background: linear-gradient(135deg, #5a6268, #495057);
-  transform: translateY(-2px);
-}
-
-button[type="submit"] {
-  background: linear-gradient(135deg, #007acc, #0056b3);
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-}
-
-button[type="submit"]:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0056b3, #003d82);
-  transform: translateY(-2px);
-}
-
-button[type="submit"]:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Loading effect (nếu có) */
-button.loading::after {
-  content: "";
-  border: 2px solid white;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  margin-left: 10px;
-  animation: spin 1s linear infinite;
-}
-
-/* Animation */
-@keyframes slideInScale {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive */
-@media (max-width: 600px) {
   .address-form-container {
-    padding: 24px;
+    padding: 20px;
+    margin: 16px;
+    width: calc(100% - 32px);
+    max-width: none;
   }
 
-  .form-buttons {
-    flex-direction: column;
+  .show_hello,
+  .show_name {
+    padding-left: 24px;
   }
 
-  .form-buttons button {
-    width: 100%;
+  .user_top {
+    height: 160px;
+  }
+
+  .account-grid {
+    grid-template-columns: 1fr;
   }
 }
-
-
-
 </style>
