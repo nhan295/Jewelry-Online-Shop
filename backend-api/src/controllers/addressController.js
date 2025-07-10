@@ -33,12 +33,12 @@ const getWardByProvince = async(req,res) =>{
 const addNewAddress = async(req,res)=>{
     
     const {user_id} = req.params
-    const {record_username,record_mobile,province_id,ward_id,street_address} = req.body
+    const {record_username,record_mobile,province_id,ward_id,street_address,address_type} = req.body
     try{
         if(!record_username || !record_mobile || !province_id || !ward_id || !street_address){
             return res.status(400).json({message: 'You entered a missing field.'})
         }
-        await addressModel.addNewAddress(user_id,record_username,record_mobile,province_id,ward_id,street_address)
+        await addressModel.addNewAddress(user_id,record_username,record_mobile,province_id,ward_id,street_address,address_type)
         return res.status(200).json({message: 'New address added'})
     }catch(err){
         console.log(err)
@@ -61,6 +61,7 @@ const editAddress = async(req,res) =>{
             ward_id,
             street_address
         })
+        
         return res.status(200).json({message: 'User address updated'})
 
     }catch(err){
