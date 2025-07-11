@@ -25,9 +25,6 @@
        <a href="" @click.prevent="selectedProduct(jewelry.jewelry_id, jewelry.color_code[jewelry.activeColorIndex].color_id, jewelry.color_code)">
         {{ jewelry.jewelry_name }}
        </a>
-            
-          
-
       </div>
 
       <div class="product-price">

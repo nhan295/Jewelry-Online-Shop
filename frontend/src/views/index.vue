@@ -406,7 +406,7 @@ const handleRegister = async () => {
     if (response.ok) {
       showMessage('Đăng ký thành công!', 'success')
       setTimeout(() => {
-        router.push('/index')
+        router.push('/')
       }, 1500)
     } else {
       showMessage(resData.message || 'Đăng ký thất bại', 'error')

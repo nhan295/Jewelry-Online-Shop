@@ -116,11 +116,6 @@
 import { onBeforeMount, nextTick } from 'vue';
 import {ref, onMounted, computed} from 'vue';
 
-
-import { useRouter } from 'vue-router';
-
-
-
 const bannerImg = [
     '/assets/banner/banner1.webp',
     '/assets/banner/banner2.webp',
