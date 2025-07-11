@@ -9,10 +9,11 @@ create table user(
     user_name varchar(50),
 	user_email varchar(50) check (`user_Email` regexp "^[a-zA-Z0-9][a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]*?[a-zA-Z0-9._-]?@[a-zA-Z0-9][a-zA-Z0-9._-]*?[a-zA-Z0-9]?\\.[a-zA-Z]{2,63}$"),
     user_mobile char(10) check (regexp_replace(user_mobile, '[^0-9]', '')),
-	user_address int,
+	user_address varchar(100),
 	date_created date
 );
-
+select*from user_record;	
+alter table user modify user_address varchar(100);
 create table user_record (
 	record_id int primary key auto_increment,
     user_id int,
@@ -28,6 +29,7 @@ create table user_record (
     foreign key(ward_id) references ward(ward_id)
 
 );
+select * from user_record;
 create table province(
 	province_id int auto_increment primary key,
     province_name varchar(50)
@@ -261,6 +263,10 @@ GROUP BY
 LIMIT 10;
 
 -- luc het session ma them gio hang khong duoc phai bao loi
+-- load van giu thanh header
+-- dang ki voi sđt
+-- user_record khong cho trung ban ghi
+
 
 
 
