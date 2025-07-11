@@ -12,36 +12,44 @@ create table user(
 	user_address int,
 	date_created date
 );
-select * from user;
--- bỏ address lúc đk và sau khi đăng kí thì mới cho cập nhật địa chỉ và chỉ cập nhật vào record
-
-insert into user(user_name,user_email,address_id) value('tuitennhan','nhan9@gmail.com','3');
-select u.user_name,u.user_email,u.user_mobile,a.address_detail,u.date_created
-from user u
-join address a on u.address_id=a.address_id;
 
 create table user_record (
 	record_id int primary key auto_increment,
     user_id int,
     record_username varchar(50),
     record_mobile char(10) check (regexp_replace(record_mobile, '[^0-9]', '')),
-    record_district varchar(50),
-    record_province varchar(50),
-    record_ward varchar(50),
+    province_id int,
+    ward_id int,
     street_address varchar(50),
+    address_type varchar(50),
     
     foreign key(user_id) references user(user_id),
     foreign key(province_id) references province(province_id),
-    foreign key(district_id) references district(district_id),
     foreign key(ward_id) references ward(ward_id)
 
 );
+create table province(
+	province_id int auto_increment primary key,
+    province_name varchar(50)
 
+);
+insert into province(province_name) values('Cần Thơ');
+
+create table ward(
+	ward_id int auto_increment primary key,
+    ward_name varchar(50),
+    province_id int,
+    
+    foreign key (province_id) references province(province_id)
+);
+insert into ward(ward_name,province_id) values('Ninh Kiều',1),('Bình Thuỷ',1),('Cái Răng',1);
 create table categories(
 	categories_id int primary key auto_increment,
     categories_name varchar(100)
 );
-insert into categories(categories_name) value('daychuyen');
+insert into categories(categories_name) value('daychuyen'),('vong');
+
+
 select * from categories;
 
 create table sub_categories(
@@ -51,10 +59,8 @@ create table sub_categories(
     
     foreign key (categories_id) references categories(categories_id)
 );
-insert into sub_categories(categories_id,sub_name) value(1,'vong bac');
+insert into sub_categories(categories_id,sub_name) value(2,'vong bac'),(2,'vong vang');
 select * from sub_categories;
-
-
 
 insert into color_code (jewelry_id,color_name) values (1,'red');
 insert into color_code (jewelry_id,color_name) values (2,'pink');
@@ -69,34 +75,41 @@ create table jewelry(
     
     foreign key(sub_id) references sub_categories(sub_id)
 );
-insert into jewelry(jewelry_name,sub_id,jewelry_price) values('pandora bac',1,300000);
-insert into jewelry(jewelry_name,sub_id,jewelry_price) values('pandora cheap','./src/assets/image/vongbac.jpg',1,2,200000);
+insert into jewelry(jewelry_name,sub_id,jewelry_price) values('vong tay bac',1,300000);
+
 select * from jewelry;
 
 create table color_code(
 	color_id int primary key auto_increment,
     jewelry_id int,
-    color_name varchar(12) unique,
+    color_name varchar(12),
     
     foreign key(jewelry_id) references jewelry(jewelry_id)
 );
+delete from color_code where color_id = 8;
 select * from color_code;
 drop table color_code;
-insert into color_code(jewelry_id,color_name) values(1,'blue');
+insert into color_code(jewelry_id,color_name) values(4,'gray');
+select * from jewelry;
 create table size(
 	size_id int primary key auto_increment,
-    size_number int unique,
+    size_number int,
     jewelry_id int,
     color_id int,
     quantity int,
     
     foreign key(jewelry_id) references jewelry(jewelry_id),
-    foreign key(color_code) references color_code(color_id)
+    foreign key(color_id) references color_code(color_id)
 );
 select * from size;
-insert into size(size_number,jewelry_id,quantity,color_id) values(45,1,1,3);
-insert into size(size_number,jewelry_id,quantity,color_id) value(50,1,4,4);
+INSERT INTO size (size_number, jewelry_id, quantity, color_id) VALUES (45, 1, 1, 1);
+INSERT INTO size (size_number, jewelry_id, quantity, color_id) VALUES (50, 1, 1, 1);
+INSERT INTO size (size_number, jewelry_id, quantity, color_id) VALUES (45, 2, 1, 2);
+INSERT INTO size (size_number, jewelry_id, quantity, color_id) VALUES (45, 3, 1, 3);
+INSERT INTO size (size_number, jewelry_id, quantity, color_id) VALUES (45, 4, 1, 6);
+INSERT INTO size (size_number, jewelry_id, quantity, color_id) VALUES (45, 5, 1, 7);
 
+ALTER TABLE size DROP INDEX size_number;
 
 create table jewelry_img(
 	img_id int primary key auto_increment,
@@ -108,7 +121,15 @@ create table jewelry_img(
     foreign key (jewelry_id) references jewelry(jewelry_id)
 
 );
-insert into jewelry_img(image,color_id,jewelry_id) values('./src/assets/image/vongbac.jpg',3,1);
+INSERT INTO jewelry_img (image, color_id, jewelry_id) VALUES ('vongbac.jpg', 9, 4),
+('vongbac.jpg', 1, 1),
+('vongbac.jpg', 2, 1),
+('vongbac.jpg', 3, 4),
+('vongbac.jpg', 3, 2),
+('vongbac.jpg', 6, 5),
+('vongbac.jpg', 7, 3);
+
+
 truncate table jewelry_img;
 select * from jewelry_img;
 create table cart(
@@ -216,9 +237,30 @@ JOIN sub_categories s ON j.sub_id = s.sub_id;
 -- ------------------------------
 INSERT INTO cart (jewelry_id, quantity, color_id)
 VALUES (1, 1, 1);
+SELECT 
+    jewelry.jewelry_name,
+    jewelry.jewelry_id,
+    sub_categories.sub_name,
+    jewelry.jewelry_price,
+    CONCAT('./assets/image/', jewelry_img.image) AS image,
+    jewelry_img.img_id,
+    color_code.color_name,
+    color_code.color_id
+FROM 
+    jewelry
+INNER JOIN 
+    sub_categories ON sub_categories.sub_id = jewelry.sub_id
+INNER JOIN 
+    color_code ON color_code.jewelry_id = jewelry.jewelry_id
+LEFT JOIN 
+    jewelry_img 
+    ON jewelry_img.jewelry_id = jewelry.jewelry_id 
+    AND jewelry_img.color_id = color_code.color_id
+GROUP BY 
+    jewelry.jewelry_id, sub_categories.sub_name, color_code.color_id
+LIMIT 10;
 
-select* from cart;
-
+-- luc het session ma them gio hang khong duoc phai bao loi
 
 
 
