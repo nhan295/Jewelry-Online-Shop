@@ -1,7 +1,26 @@
 const userModel = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
-const getUserData = (req, res) =>{
+const getUserById = async (req, res) => {
+  const { user_id } = req.params;
+
+  if (!user_id) {
+    return res.status(400).json({ message: 'Thiếu user_id trong URL' });
+  }
+
+  try {
+    const data = await userModel.getUserById(user_id);
+    if (data) {
+      return res.status(200).json({ user: data });
+    } else {
+      return res.status(404).json({ message: 'Không tìm thấy người dùng' });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Lỗi server khi lấy người dùng' });
+  }
+};
+const getUserByUsername = (req, res) =>{
    if(!req.session.user){
     return res.status(401).json({message:'not authenticate'})
    }
@@ -55,12 +74,11 @@ const login = async(req,res) =>{
         const getPassword = await userModel.getUserPass(username)
         const match = await bcrypt.compareSync(password, getPassword);
     
-
         if(!match){
             return res.status(401).json({message:'password does not match'})
         }
         else{
-            req.session.user = await userModel.getUserData(username)  // session được lưu trữ trong req.session
+            req.session.user = await userModel.getUserByUsername(username)  // session được lưu trữ trong req.session
             req.session.user_name = username
             res.status(200).json({message: req.session.user})
         }
@@ -130,7 +148,8 @@ const editProfile = async(req,res) =>{
     }
 }
 module.exports = {
-    getUserData,
+    getUserByUsername,
+    getUserById,
     register,
     login,
     changePass,

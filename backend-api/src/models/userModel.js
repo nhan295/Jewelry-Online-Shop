@@ -2,9 +2,15 @@ const db = require('../config/db');
 
 const userModel = {
 
-    getUserData : (username) =>{
-        return db('user').select('*').where({user_name : username}).first();
-    },
+   getUserById: (user_id) => {
+    return db('user')
+        .select('user_id', 'user_name', 'user_email', 'user_mobile', 'user_address', 'date_created')
+        .where({ user_id })
+        .first();
+},
+  getUserByUsername: (username) => {
+    return db('user').where({ user_name: username }).first();
+  },
 
     getUserName : (username) =>{
         return db('user').where({user_name: username}).first();
