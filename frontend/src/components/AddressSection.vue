@@ -1,483 +1,364 @@
 <template>
-    <!-- mục địa chỉ -->
-    <div class="address-box">
-        <div class="header">
-          <i class="fa fa-truck icon-pulse"></i>
-          <strong>DANH SÁCH ĐỊA CHỈ</strong>
-          <a class="view-all" href="#">Xem tất cả</a>
-        </div>
-
-        <hr class="divider" />
-
-        <!-- Danh sách địa chỉ -->
-        <div class="address-item">
-          <div>
-            <strong>{{ userName || "Tên người dùng" }} - {{ userMobile || "Số điện thoại" }}</strong>
-            <div>{{ userAddress || "Địa chỉ" }}, Vietnam</div>
-            <div class="label">Nhà riêng</div>
-          </div>
-          <span class="default-tag">Mặc định</span>
-        </div>
-
-        <!-- danh sách địa chỉ mới-->
-        <div class="address-list-container">
-          <div class="address-list-content" v-for="list in addressList"
-          :key="list.record_id">
-            <p><strong>Tên người dùng:</strong> {{ list.record_username }}</p>
-            <p><strong>Số điện thoại:</strong> {{ list.record_mobile }}</p>
-            <p><strong>Địa chỉ:</strong> {{ list.street_address }}, {{ list.ward_name }}, {{ list.province_name }}</p>
-            <div class="label">{{ list.address_type }}</div>
-          </div>
-
-        </div>
-
-        <!-- Thêm địa chỉ mới -->
-        <div class="add-new" @click="OpenAddressForm">
-          <i class="fa fa-plus"></i>
-          <span>Thêm địa chỉ mới</span>
-        </div>
+  <div class="address-box">
+    <div class="header">
+      <i class="fa fa-truck"></i>
+      <strong>DANH SÁCH ĐỊA CHỈ</strong>
+      <a class="view-all" href="#">Xem tất cả</a>
     </div>
 
-    <!-- popup -->
-     <div
-          class="address-popup-overlay"
-          v-if="showAddressForm"
-          @click="closeAddressForm"
-        >
-          <div class="address-form-container" @click.stop>
-            <!-- Nút đóng -->
-            <button class="close-popup" @click="closeAddressForm">
-              &times;
-            </button>
-         
-            <h3>Địa chỉ</h3>
-            <form @submit.prevent="handleNewAddress">
-              <div class="form-group">
-                
-                <input
-                  type="text"
-                  v-model="editForm.recordUsername"
-                  placeholder="Tên người dùng"
-                  required
-                />
-              </div>
+    <hr class="divider" />
 
-              <div class="form-group">
-               
-                <input
-                  type="text"
-                  v-model="editForm.recordMobile"
-                  placeholder="Số điện thoại"
-                  required
-                />
-              </div>
+    <div class="address-item">
+      <div>
+        <strong>{{ userName }} - {{ userMobile }}</strong>
+        <div>{{ userAddress }}, Vietnam</div>
+        <div class="label">Nhà riêng</div>
+      </div>
+      <span class="default-tag">Mặc định</span>
+    </div>
 
-              <div class="form-group">
-               <select v-model="selectedProvince" required @change="getWardByProvince">
-                <option value="" disabled>Chọn tỉnh/thành phố</option>
-                <option v-for="province in provinces" 
-                :key="province.province_id" 
-                :value="province.province_id">{{ province.province_name }}</option>
-               </select>
-              </div>
-
-              <div class="form-group">
-               <select v-model="selectedWard" required>
-                <option value="" disabled>Chọn xã/phường</option>
-                <option v-for="ward in wards"
-                :key="ward.ward_id"
-                :value="ward.ward_id">{{ ward.ward_name }}</option>
-               </select>
-                
-              </div>
-
-              <div class="form-group">
-                
-                <input
-                  type="text"
-                  v-model="editForm.streetAddress"
-                  placeholder="Tên đường, số nhà"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="">Văn phòng</label>
-                <input type="radio"
-                v-model="editForm.addressType"
-                value="Văn phòng">
-              </div>
-
-              <div class="form-group">
-                <label for="">Nhà riêng</label>
-                <input type="radio"
-                v-model="editForm.addressType"
-                value="Nhà riêng">
-              </div>
-
-              <div class="form-buttons">
-                <button
-                  type="button"
-                  class="cancel-btn"
-                  @click="closeAddressForm"
-                >
-                  Huỷ
-                </button>
-                <button
-                  type="submit"
-                  :disabled="isSubmittingAddress"
-                  :class="{ loading: isSubmittingAddress }"
-                >
-                  {{ isSubmittingAddress ? "Đang xử lý..." : "Hoàn thành" }}
-                </button>
-              </div>
-            </form>
-          </div>
+    <div class="address-list-container">
+      <div class="address-list-content" v-for="list in addressList" :key="list.record_id">
+        <div class="address-info">
+          <p><strong>Tên người dùng:</strong> {{ list.record_username }}</p>
+          <p><strong>Số điện thoại:</strong> {{ list.record_mobile }}</p>
+          <p><strong>Địa chỉ:</strong> {{ list.street_address }}, {{ list.ward_name }}, {{ list.province_name }}</p>
+          <div class="label">{{ list.address_type }}</div>
         </div>
-</template>
-<script setup>
-import { ref, onMounted, onUnmounted, watch, toRefs, defineProps} from "vue";
+        <div class="action-icons">
+          <i class="fas fa-edit edit-icon" @click="openEditAddress(list)"></i>
+          <i class="fas fa-trash delete-icon" @click="deleteAddress()"></i>
+        </div>
+      </div>
+    </div>
 
-// Message và loading states
+    <div class="add-new" @click="openAddForm()">
+      <i class="fa fa-plus"></i>
+      <span>Thêm địa chỉ mới</span>
+    </div>
+  </div>
+
+  <!-- popup -->
+  <div v-if="showAddressForm" class="address-popup-overlay" @click="closeAddressForm">
+    <div class="address-form-container" @click.stop>
+      <button class="close-popup" @click="closeAddressForm">&times;</button>
+      <h3>Địa chỉ</h3>
+      <form @submit.prevent="submitAddressForm()">
+        <div class="form-group">
+          <input type="text" v-model="editForm.recordUsername" placeholder="Tên người dùng" required />
+        </div>
+        <div class="form-group">
+          <input type="text" v-model="editForm.recordMobile" placeholder="Số điện thoại" required />
+        </div>
+        <div class="form-group">
+          <select v-model="selectedProvince" required @change="getWardByProvince">
+            <option value="" disabled>Chọn tỉnh/thành phố</option>
+            <option v-for="province in provinces" :key="province.province_id" :value="province.province_id">
+              {{ province.province_name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <select v-model="selectedWard" required>
+            <option value="" disabled>Chọn xã/phường</option>
+            <option v-for="ward in wards" :key="ward.ward_id" :value="ward.ward_id">
+              {{ ward.ward_name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <input type="text" v-model="editForm.streetAddress" placeholder="Tên đường, số nhà" required />
+        </div>
+        <div class="form-group">
+          <label><input type="radio" v-model="editForm.addressType" value="Văn phòng" /> Văn phòng</label>
+          <label><input type="radio" v-model="editForm.addressType" value="Nhà riêng" /> Nhà riêng</label>
+        </div>
+        <div class="form-buttons">
+          <button type="button" class="cancel-btn" @click="closeAddressForm">Huỷ</button>
+          <button type="submit" :disabled="isSubmittingAddress">
+            {{ isSubmittingAddress ? "Đang xử lý..." : (isEditMode ? "Cập nhật" : "Hoàn thành") }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onUnmounted } from "vue";
+
 const message = ref("");
 const provinces = ref([]);
 const wards = ref([]);
-//giá trị của province và ward được chọn
-const selectedProvince = ref('');
-const selectedWard = ref('');
+const selectedProvince = ref("");
+const selectedWard = ref("");
 
-//danh sách địa chỉ
 const addressList = ref([]);
-
-// Popup control
-const showEditForm = ref(false);
 const showAddressForm = ref(false);
+const isSubmittingAddress = ref(false);
 
-const props = defineProps({
-    userId: Number,
-    userName: String,
-    userEmail: String,
-    userMobile: String,
-    userAddress: String,
-});
-const { userId } = toRefs(props)
-// Edit form data - tách riêng để không ảnh hưởng đến display data
+const userId = ref(null);
+const userName = ref("");
+const userMobile = ref("");
+const userAddress = ref("");
+
+// mode state
+const isEditMode = ref(false); // false: thêm mới, true: sửa
+const editingRecordId = ref(null); // lưu record_id đang chỉnh sửa
+
+// Form
 const editForm = ref({
   recordUsername: "",
   recordMobile: "",
-  recordProvince: "",
-  recordWard: "",
   streetAddress: "",
-  addressType: ""
+  addressType: "",
 });
 
-// mở form thêm địa chỉ
-const OpenAddressForm = () => {
+//mở form thêm
+const openAddForm = () => {
+  isEditMode.value = false;
+  editingRecordId.value = null;
   showAddressForm.value = true;
   document.body.style.overflow = "hidden";
 };
-//đóng form địa chỉ
+
 const closeAddressForm = () => {
   showAddressForm.value = false;
   document.body.style.overflow = "auto";
-};
-// Đóng popup
-const closePopup = () => {
-  showEditForm.value = false;
-  document.body.style.overflow = "auto";
-
+  isEditMode.value = false;
+  editingRecordId.value = null;
   // Reset form
   editForm.value = {
-    userName: "",
-    userEmail: "",
-    userMobile: "",
-    userAddress: "",
+    recordUsername: "",
+    recordMobile: "",
+    streetAddress: "",
+    addressType: "",
   };
+  selectedProvince.value = "";
+  selectedWard.value = "";
+};
+ //mở form sửa
+const openEditAddress = (list)=>{
+  isEditMode.value = true;
+  editingRecordId.value = list.record_id;
+  editForm.value = {
+    recordUsername: list.record_username,
+    recordMobile: list.record_mobile,
+    streetAddress: list.street_address,
+    addressType: list.address_type
+  };
+  selectedProvince.value = list.province_id,
+  selectedWard.value = list.ward_id
+
+  showAddressForm.value = true;
+  document.body.style.overflow = "hidden";
+  getWardByProvince()
+}
+
+const submitAddressForm = async () => {
+  try {
+    isSubmittingAddress.value = true;
+
+    const url = isEditMode.value
+      ? `http://localhost:3000/api/v1/address/edit/${addressList.value[0]?.record_id}`
+      : `http://localhost:3000/api/v1/address/add/${userId.value}`;
+
+    const method = isEditMode.value ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        record_username: editForm.value.recordUsername,
+        record_mobile: editForm.value.recordMobile,
+        province_id: selectedProvince.value,
+        ward_id: selectedWard.value,
+        street_address: editForm.value.streetAddress,
+        address_type: editForm.value.addressType,
+      }),
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      message.value = isEditMode.value
+        ? "Cập nhật địa chỉ thành công"
+        : "Thêm địa chỉ mới thành công";
+      await getAddressList();
+      closeAddressForm();
+    } else {
+      message.value = `Lỗi: ${data.message || "Không thể xử lý địa chỉ"}`;
+    }
+  } catch (err) {
+    console.error("Lỗi khi xử lý địa chỉ", err);
+  } finally {
+    isSubmittingAddress.value = false;
+  }
+};
+
+const deleteAddress = async() => {
+  try{
+    const res = await fetch(`http://localhost:3000/api/v1/address/delete/${addressList.value[0]?.record_id}`,{
+      method: 'DELETE'
+    })
+    const data = await res.json()
+    if(res.ok){
+      message.value = 'Đã xoá địa chỉ'
+      await getAddressList()
+    }else{
+      console.error('Xoá thất bại:', data);
+    }
+  }catch(err){
+    console.log(err)
+  }
+};
+
+const getUserData = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/v1/user/", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    const user = data.user || data.value || data;
+
+    userId.value = user.user_id;
+    userName.value = user.user_name;
+    userMobile.value = user.user_mobile;
+    userAddress.value = user.user_address;
+  } catch (err) {
+    console.error("Lỗi lấy thông tin người dùng", err);
+  }
 };
 
 const getProvince = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/v1/address/provinces");
-    if(res.ok){
-      const data = await res.json()
-      provinces.value = data
-      console.log('Provinces list:',data)
-    }else{
-      console.error('Failed to fetch province')
+    if (res.ok) {
+      provinces.value = await res.json();
     }
   } catch (err) {
-      console.error("Error fetching provinces:", err);
+    console.error("Lỗi lấy danh sách tỉnh/thành", err);
   }
 };
 
 const getWardByProvince = async () => {
   try {
-    
-    const res = await fetch(
-      `http://localhost:3000/api/v1/address/${selectedProvince.value}/wards`);
-      if(res.ok){
-        const data = await res.json()
-        console.log('Ward list',data)
-        wards.value = data
-      }else{
-        console.error('Failed to fetch ward')
-      }
-  } catch(err) {
-    console.error("Error fetching ward:", err);
-  }
-};
-
-// Thêm địa chỉ mới 
-const handleNewAddress = async () => {
-  try {
-    const res = await fetch(
-      `http://localhost:3000/api/v1/address/add/${userId.value}`,
-    {
-        method: 'POST',
-        headers: {"Content-Type":"application/json"},
-        credentials: "include",
-        body: JSON.stringify({
-          record_username: editForm.value.recordUsername,
-          record_mobile: editForm.value.recordMobile,
-          province_id: selectedProvince.value,
-          ward_id: selectedWard.value,
-          street_address: editForm.value.streetAddress,
-          address_type: editForm.value.addressType
-        })
-      });
-      
-      const data = await res.json()
-      if(res.ok){
-        message.value = 'Thêm địa chỉ mới thành công'
-        getAddressList();
-      }else{
-         message.value = `Lỗi: ${data.message || "Không thể thêm địa chỉ"}`;
-      }
+    const res = await fetch(`http://localhost:3000/api/v1/address/${selectedProvince.value}/wards`);
+    if (res.ok) {
+      wards.value = await res.json();
+    }
   } catch (err) {
-    console.log('Lỗi khi thêm địa chỉ',err)
+    console.error("Lỗi lấy danh sách xã/phường", err);
   }
 };
 
-//lấy danh sách địa chỉ
-const getAddressList = async()=>{
-    if (!userId) {
-        console.warn("userId chưa được truyền vào component");
-        return;
+
+const getAddressList = async () => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/v1/address/list/${userId.value}`);
+    if (res.ok) {
+      addressList.value = await res.json();
     }
-  try{
-    const list = await fetch(`http://localhost:3000/api/v1/address/list/${userId.value}`)
-    if(list){
-      addressList.value = await list.json();
-      console.log(`Danh sách địa chỉ của user ${userId}:`,addressList.value)
-    }else{
-      console.log('Không tải được danh sách địa chỉ')
-    }
-  }catch(err){
-    console.log('Lỗi khi tải danh sách địa chỉ',err)
-  }
-}
-// Xử lý phím ESC
-const handleKeydown = (e) => {
-  if (e.key === "Escape" && showEditForm.value) {
-    closePopup();
+  } catch (err) {
+    console.error("Lỗi khi tải danh sách địa chỉ", err);
   }
 };
 
-// Lifecycle hooks
-onMounted(async() => {
-  getProvince();
-  getAddressList();
-  document.addEventListener("keydown", handleKeydown);
+onMounted(async () => {
+  await getUserData();
+  await getProvince();
+  await getAddressList();
 });
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
   document.body.style.overflow = "auto";
 });
-
-watch(()=>userId,(newVal)=>{
-    if(newVal){
-        getAddressList();
-    }
-})
 </script>
 
 <style scoped>
-@import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css";
-
-/* Global smooth transitions */
-* {
-  transition: all 0.2s ease;
-}
-/* address.css */
-
 .address-box {
-  border: 1px solid #ddd;
+  border: 1px solid #e5e7eb;
   padding: 20px;
   width: 100%;
-  max-width: 600px;
-  font-family: Arial, sans-serif;
-  margin-top: 20px;
-  margin-right: 20px;
-  border-radius: 8px;
-  background: white;
+  max-width: 640px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 20px auto;
+  border-radius: 12px;
+  background: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.address-box:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
+/* Header */
 .header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   font-size: 16px;
   margin-bottom: 16px;
   font-weight: 600;
+  color: #1f2937;
+}
+
+.header i {
+  font-size: 18px;
+  color: #3b82f6;
 }
 
 .view-all {
   margin-left: auto;
   font-weight: 500;
-  color: #007acc;
+  color: #3b82f6;
   text-decoration: none;
   padding: 6px 12px;
-  border-radius: 4px;
-  background: #f8f9fa;
-  font-size: 13px;
-}
-
-.view-all:hover {
-  background: #e9ecef;
-  text-decoration: none;
-}
-
-/* Address Items */
-.address-item {
-  border: 1px solid #eee;
-  padding: 12px;
-  margin: 10px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  position: relative;
   border-radius: 6px;
-  background: #fff;
-}
-
-.address-item:hover {
-  border-color: #007acc;
-}
-
-.default-tag {
-  background: #e3f2fd;
-  color: #007acc;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  position: absolute;
-  top: 12px;
-  right: 12px;
-}
-
-.edit-btn {
-  background: #f5f5f5;
-  border: none;
-  cursor: pointer;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 6px;
-  border-radius: 50%;
-}
-
-.edit-btn:hover {
-  background: #e9ecef;
-}
-
-.add-new {
-  border: 2px dashed #ccc;
-  padding: 16px;
-  text-align: center;
-  cursor: pointer;
-  font-weight: 500;
-  color: #666;
-  border-radius: 6px;
-  background: #f8f9fa;
+  background: #eff6ff;
   font-size: 14px;
 }
 
-.add-new:hover {
-  border-color: #007acc;
-  background: #fff;
-  color: #007acc;
-}
-
-.add-new i {
-  margin-right: 8px;
+.view-all:hover {
+  background: #dbeafe;
 }
 
 /* Divider */
 .divider {
   border: none;
   height: 1px;
-  background: #eee;
+  background: #e5e7eb;
   margin: 16px 0;
 }
 
-/* Address Form Popup */
-.address-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* Address Items */
+.address-item {
+  border: 1px solid #f3f4f6;
   padding: 16px;
-  overflow-y: auto;
-}
-
-.address-form-container {
-  background: white;
+  margin: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   border-radius: 8px;
-  padding: 24px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  position: relative;
+  background: #f9fafb;
 }
 
-.address-form-container h3 {
-  font-size: 18px;
+.address-item strong {
   font-weight: 600;
-  margin-bottom: 20px;
-  color: #333;
-  text-align: center;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.address-form-container input,
-.address-form-container select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  color: #111827;
   font-size: 14px;
-  background: #fff;
-  box-sizing: border-box;
 }
 
-.address-form-container input:focus,
-.address-form-container select:focus {
-  border-color: #007acc;
-  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.1);
-  outline: none;
+.address-item div {
+  color: #6b7280;
+  font-size: 13px;
+  margin: 2px 0;
+}
+
+.default-tag {
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 /* Address List */
@@ -486,33 +367,245 @@ watch(()=>userId,(newVal)=>{
 }
 
 .address-list-content {
-  background: #f8f9fa;
-  border: 1px solid #eee;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.address-list-content p {
-  font-family: Arial, sans-serif;
+.address-info {
+  flex: 1;
+}
+
+.address-info p {
   font-size: 14px;
-  line-height: 1.5;
-  margin: 6px 0;
-  color: #333;
+  line-height: 1.4;
+  margin: 4px 0;
+  color: #374151;
 }
 
-.address-list-content p strong {
-  font-family: Arial, sans-serif;
+.address-info p strong {
   font-weight: 600;
-  color: #555;
+  color: #111827;
 }
 
-/* Label */
+/* Action Icons */
+.action-icons {
+  display: flex;
+  gap: 12px;
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+.edit-icon, .delete-icon {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-icon {
+  color: #3b82f6;
+  background: #eff6ff;
+}
+
+.edit-icon:hover {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.delete-icon {
+  color: #ef4444;
+  background: #fef2f2;
+}
+
+.delete-icon:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Labels */
 .label {
-  color: #d94f4f;
+  color: #f59e0b;
   font-weight: 500;
   margin-top: 4px;
   font-size: 12px;
+  padding: 2px 6px;
+  background: #fef3c7;
+  border-radius: 4px;
+  display: inline-block;
 }
 
+/* Add New Button */
+.add-new {
+  border: 2px dashed #d1d5db;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: #6b7280;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.add-new:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.add-new i {
+  margin-right: 8px;
+}
+
+/* Popup */
+.address-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.address-form-container {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.close-popup {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f3f4f6;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.close-popup:hover {
+  background: #e5e7eb;
+}
+
+.address-form-container h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #111827;
+  text-align: center;
+}
+
+/* Form */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.form-group label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.form-group input[type="radio"] {
+  width: auto;
+  margin-right: 6px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.form-buttons button[type="submit"] {
+  background: #3b82f6;
+  color: white;
+}
+
+.form-buttons button[type="submit"]:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.form-buttons button[type="submit"]:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .address-box {
+    margin: 10px;
+    padding: 16px;
+  }
+  
+  .address-form-container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+  }
+}
 </style>

@@ -16,7 +16,7 @@
       </div>
 
       <div class="show_name">
-        <h1>{{ userName || "Chưa tải được tên" }}</h1>
+        <h1>{{ userData.user_name || "Chưa tải được tên" }}</h1>
       </div>
     </div>
 
@@ -36,23 +36,12 @@
     <!-- mục thông tin tài khoản -->
     <div class="user_bottom">
        <div v-show="currentTab === 'account'">
-        <AccountInfoSection 
-        :userId = "userId"
-        :userName="userName"
-        :userEmail="userEmail"
-        :userMobile="userMobile"
-        :userAddress="userAddress"
-        :userCreated="userCreated"
-        :getUserData="getUserData"/>
+        <AccountInfoSection :userData="userData" />
+
       </div>
 
       <div v-show="currentTab === 'address'">
-        <AddressSection 
-        :userId = "userId"
-        :userName="userName"
-        :userEmail="userEmail"
-        :userMobile="userMobile"
-        :userAddress="userAddress"/>
+        <AddressSection />
       </div>
 
       <div v-show="currentTab === 'history'">
@@ -63,85 +52,66 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted } from "vue";
 import AccountInfoSection from "./AccountInfoSection.vue";
 import AddressSection from "./AddressSection.vue";
 const currentTab = ref('account');
-// Message và loading states
 const message = ref("");
 
-// User data refs
-const userId = ref(null);
-const userName = ref(null);
-const userEmail = ref(null);
-const userAddress = ref(null);
-const userMobile = ref(null);
-const userCreated = ref(null);
+const userData = ref({
+  user_id: null,
+  user_name: '',
+  user_email: '',
+  user_mobile: '',
+  user_address: '',
+  date_created: ''
+});
 
-
-// Tự động ẩn message sau 5 giây
-const autoHideMessage = () => {
-  if (message.value) {
-    setTimeout(() => {
-      message.value = "";
-    }, 5000);
-  }
-};
-
-// Lấy dữ liệu user
-const getUserData = async () => {
+const fetchUserFromSession = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/v1/user/", {
-      method: "GET",
-      credentials: "include",
+    const res = await fetch('http://localhost:3000/api/v1/user', {
+      method: 'GET',
+      credentials: 'include'
     });
-
-    if (response.status === 401) {
-      message.value = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
-      autoHideMessage();
-      // Có thể chuyển hướng đến trang đăng nhập
-      // window.location.href = '/login';
-      return;
-    }
-
-    const data = await response.json();
-    console.log("API Response:", data);
-
-    if (response.ok) {
-      // Xử lý nhiều format response khác nhau
-      const user = data.user || data.value || data;
-
-      if (user) {
-        userId.value = user.user_id;
-        userName.value = user.user_name;
-        userEmail.value = user.user_email;
-        userAddress.value = user.user_address;
-        userMobile.value = user.user_mobile;
-        userCreated.value = user.date_created;
-      } else {
-        message.value = "Không thể tải thông tin người dùng";
-        autoHideMessage();
-      }
+    const data = await res.json();
+    if (res.ok && data.user?.user_id) {
+      userData.value.user_id = data.user.user_id;
+      await fetchUserData(data.user.user_id);
     } else {
-      message.value = `Lỗi: ${data.message || "Không thể tải thông tin người dùng"}`;
+      message.value = 'Không tìm thấy người dùng trong session';
       autoHideMessage();
     }
   } catch (err) {
-    message.value = "Lỗi kết nối đến server";
-    console.error("Error fetching user data:", err);
+    message.value = 'Lỗi kết nối đến server';
     autoHideMessage();
   }
 };
 
+// Step 2: Lấy thông tin chi tiết từ DB qua user_id
+const fetchUserData = async (userId) => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/v1/user/${userId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (res.ok && data.user) {
+      userData.value = { ...data.user };
+    } else {
+      message.value = `Lỗi: ${data.message || 'Không thể tải dữ liệu'}`;
+      autoHideMessage();
+    }
+  } catch (err) {
+    message.value = 'Lỗi kết nối đến server';
+    autoHideMessage();
+  }
+};
 
-// Lifecycle hooks
 onMounted(async() => {
-  await getUserData();
+  await fetchUserFromSession();
 });
 
-onUnmounted(() => {
-  document.body.style.overflow = "auto";
-});
+
 </script>
 
 <style scoped>

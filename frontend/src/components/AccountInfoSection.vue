@@ -1,418 +1,499 @@
 <template>
-    <div class="account-info">
-        <div class="header">
-          <i class="fas fa-user-edit icon-bounce"></i>
-          <strong>THÔNG TIN TÀI KHOẢN</strong>
-          <a class="view-all" href="#" @click.prevent="openEditFormUser"
-            >Chỉnh sửa</a
-          >
-        </div>
-        <hr class="divider" />
-        <div class="account-grid">
-          <div class="account-item">
-            <strong>Username</strong>
-            <p>{{ userName || "Đang tải..." }}</p>
-          </div>
-
-          <div class="account-item">
-            <strong>Date Created</strong>
-            <p>{{ formatDate(userCreated) || "Đang tải..." }}</p>
-          </div>
-
-          <div class="account-item">
-            <strong>Email</strong>
-            <p>{{ userEmail || "Đang tải..." }}</p>
-          </div>
-
-          <div class="account-item">
-            <strong>Mobile</strong>
-            <p>{{ userMobile || "Đang tải..." }}</p>
-          </div>
-
-          <div class="account-item">
-            <strong>Address</strong>
-            <p>{{ userAddress || "Đang tải..." }}</p>
-          </div>
-        </div>
+  <div class="account-info">
+    <div
+      v-if="message"
+      class="message-alert"
+      :class="{ error: message.includes('Lỗi') || message.includes('Failed') }"
+    >
+      {{ message }}
+      <button class="close-message" @click="message = ''">&times;</button>
     </div>
-      
-      <!-- popup -->
-    <div v-if="showEditForm" class="popup-overlay" @click="closePopup">
-        <div class="edit-user-form" @click.stop>
-          <!-- Nút đóng -->
-          <button class="close-popup" @click="closePopup">&times;</button>
 
-          <!-- Tiêu đề -->
-          <h2 class="popup-title">Chỉnh sửa thông tin</h2>
+    <!-- Header -->
+    <div class="header">
+      <i class="fas fa-user-edit icon-bounce"></i>
+      <strong>THÔNG TIN TÀI KHOẢN</strong>
+      <a class="view-all" href="#" @click.prevent="openEditFormUser">Chỉnh sửa</a>
+    </div>
 
-          <!-- Form -->
-          <form @submit.prevent="handleEditUser">
-            <div class="form-group">
-              <label for="username">Tên người dùng</label>
-              <input
-                id="username"
-                type="text"
-                v-model="editForm.userName"
-                required
-                placeholder="Nhập tên người dùng"
-              />
-            </div>
+    <hr class="divider" />
 
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input
-                id="email"
-                type="email"
-                v-model="editForm.userEmail"
-                required
-                placeholder="Nhập email"
-              />
-            </div>
+    <!-- Dữ liệu tài khoản -->
+    <div class="account-grid">
+      <div class="account-item"><strong>Username</strong><p>{{ userData.user_name || "Đang tải..." }}</p></div>
+      <div class="account-item"><strong>Date Created</strong><p>{{ formatDate(userData.date_created) }}</p></div>
+      <div class="account-item"><strong>Email</strong><p>{{ userData.user_email || "Đang tải..." }}</p></div>
+      <div class="account-item"><strong>Mobile</strong><p>{{ userData.user_mobile || "Đang tải..." }}</p></div>
+      <div class="account-item"><strong>Address</strong><p>{{ userData.user_address || "Đang tải..." }}</p></div>
 
-            <div class="form-group">
-              <label for="mobile">Số điện thoại</label>
-              <input
-                id="mobile"
-                type="tel"
-                v-model="editForm.userMobile"
-                required
-                placeholder="Nhập số điện thoại"
-              />
-            </div>
+    </div>
+  </div>
+  
 
-            <div class="form-group">
-              <label for="address">Địa chỉ</label>
-              <input
-                id="address"
-                type="text"
-                v-model="editForm.userAddress"
-                required
-                placeholder="Nhập địa chỉ"
-              />
-            </div>
-
-            <div class="form-buttons">
-              <button type="button" class="cancel-btn" @click="closePopup">
-                Hủy
-              </button>
-              <button
-                type="submit"
-                :class="{ loading: isSubmitting }"
-                :disabled="isSubmitting"
-              >
-                {{ isSubmitting ? "Đang lưu..." : "Lưu thông tin" }}
-              </button>
-            </div>
-          </form>
+  <!-- Popup edit -->
+  <div v-if="showEditForm" class="popup-overlay" @click="closePopup">
+    <div class="edit-user-form" @click.stop>
+      <button class="close-popup" @click="closePopup">&times;</button>
+      <h2 class="popup-title">Chỉnh sửa thông tin</h2>
+      <form @submit.prevent="handleEditUser">
+        <div class="form-group">
+          <label for="username">Tên người dùng</label>
+          <input id="username" v-model="editForm.user_name" required />
         </div>
-      </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" v-model="editForm.user_email" required />
+        </div>
+        <div class="form-group">
+          <label for="mobile">Số điện thoại</label>
+          <input id="mobile" type="tel" v-model="editForm.user_mobile" required />
+        </div>
+        <div class="form-group">
+          <label for="address">Địa chỉ</label>
+          <input id="address" v-model="editForm.user_address"  required />
+        </div>
+        <div class="form-buttons">
+          <button type="button" class="cancel-btn" @click="closePopup">Hủy</button>
+          <button type="submit" :class="{ loading: isSubmitting }" :disabled="isSubmitting">
+            {{ isSubmitting ? "Đang lưu..." : "Lưu thông tin" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, onUnmounted, toRefs, watch } from "vue";
+import { ref, onMounted, onUnmounted } from 'vue';
 
-const props = defineProps({
-    userId: Number,
-    userName: String,
-    userEmail: String,
-    userMobile: String,
-    userAddress: String,
-    userCreated: String,
-    getUserData: Function 
-});
-const {
-  userId,
-  userName,
-  userEmail,
-  userMobile,
-  userAddress,
-  userCreated
-} = toRefs(props);
-// Message và loading states
-const message = ref("");
+const message = ref('');
 const isSubmitting = ref(false);
-
-// Popup control
 const showEditForm = ref(false);
 
-// Edit form data - tách riêng để không ảnh hưởng đến display data
-const editForm = ref({
-  userName: "",
-  userEmail: "",
-  userMobile: "",
-  userAddress: "",
+const userData = ref({
+  user_id: null,
+  user_name: '',
+  user_email: '',
+  user_mobile: '',
+  user_address: '',
+  date_created: ''
 });
 
-// Tự động ẩn message sau 5 giây
+const editForm = ref({
+  user_name: '',
+  user_email: '',
+  user_mobile: '',
+  user_address: ''
+});
+
 const autoHideMessage = () => {
   if (message.value) {
     setTimeout(() => {
-      message.value = "";
+      message.value = '';
     }, 5000);
   }
 };
 
 const formatDate = (date) => {
-  if (!date) return "Đang tải...";
-  return new Date(date).toLocaleDateString("vi-VN");
+  if (!date) return 'Đang tải...';
+  return new Date(date).toLocaleDateString('vi-VN');
 };
 
+// Step 1: Lấy user_id từ session
+const fetchUserFromSession = async () => {
+  try {
+    const res = await fetch('http://localhost:3000/api/v1/user', {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (res.ok && data.user?.user_id) {
+      userData.value.user_id = data.user.user_id;
+      await fetchUserData(data.user.user_id);
+    } else {
+      message.value = 'Không tìm thấy người dùng trong session';
+      autoHideMessage();
+    }
+  } catch (err) {
+    message.value = 'Lỗi kết nối đến server';
+    autoHideMessage();
+  }
+};
 
-// Mở popup edit
+// Step 2: Lấy thông tin chi tiết từ DB qua user_id
+const fetchUserData = async (userId) => {
+  try {
+    const res = await fetch(`http://localhost:3000/api/v1/user/${userId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (res.ok && data.user) {
+      userData.value = { ...data.user };
+    } else {
+      message.value = `Lỗi: ${data.message || 'Không thể tải dữ liệu'}`;
+      autoHideMessage();
+    }
+  } catch (err) {
+    message.value = 'Lỗi kết nối đến server';
+    autoHideMessage();
+  }
+};
+
+// Mở form chỉnh sửa
 const openEditFormUser = () => {
   editForm.value = {
-    userName: userName.value || "",
-    userEmail: userEmail.value || "",
-    userMobile: userMobile.value || "",
-    userAddress: userAddress.value || "",
+    user_name: userData.value.user_name,
+    user_email: userData.value.user_email,
+    user_mobile: userData.value.user_mobile,
+    user_address: userData.value.user_address
   };
   showEditForm.value = true;
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow = 'hidden';
 };
 
 // Đóng popup
 const closePopup = () => {
   showEditForm.value = false;
-  document.body.style.overflow = "auto";
-
-  // Reset form
-  editForm.value = {
-    userName: "",
-    userEmail: "",
-    userMobile: "",
-    userAddress: "",
-  };
+  document.body.style.overflow = 'auto';
 };
 
-// Xử lý submit form edit
+// Gửi cập nhật lên server
 const handleEditUser = async () => {
-  if (!userId.value) {
-    message.value = "Không tìm thấy ID người dùng";
+  const id = userData.value.user_id;
+  if (!id) {
+    message.value = 'Không tìm thấy ID người dùng';
     autoHideMessage();
     return;
   }
-console.log('userId:',userId)
+
   isSubmitting.value = true;
-
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/v1/user/edit/profile/${userId.value}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          user_name: editForm.value.userName,
-          user_email: editForm.value.userEmail,
-          user_mobile: editForm.value.userMobile,
-          user_address: editForm.value.userAddress,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
-        
-    console.log("Response:", response.status, data);
-      message.value = "Cập nhật thông tin thành công!";
-      console.log("✅ Gửi dữ liệu:", {
-        user_name: editForm.value.userName,
-        user_email: editForm.value.userEmail,
-        user_mobile: editForm.value.userMobile,
-        user_address: editForm.value.userAddress,
-});
-    
-      // Đóng popup
+    const res = await fetch(`http://localhost:3000/api/v1/user/edit/profile/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ ...editForm.value })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      message.value = 'Cập nhật thành công!';
+      await fetchUserData(id);
       closePopup();
-      if(props.getUserData){
-        // Tải lại dữ liệu từ server để đảm bảo đồng bộ
-      await props.getUserData();
-      }
     } else {
-      message.value = `Lỗi: ${data.message || "Không thể cập nhật thông tin"}`;
+      message.value = `Lỗi: ${data.message || 'Không thể cập nhật'}`;
     }
   } catch (err) {
-    message.value = "Lỗi kết nối. Vui lòng thử lại.";
-    console.error("Error updating user:", err);
+    message.value = 'Lỗi kết nối. Vui lòng thử lại.';
   } finally {
     isSubmitting.value = false;
     autoHideMessage();
   }
 };
 
-// Xử lý phím ESC
+// Thoát popup bằng ESC
 const handleKeydown = (e) => {
-  if (e.key === "Escape" && showEditForm.value) {
-    closePopup();
-  }
+  if (e.key === 'Escape' && showEditForm.value) closePopup();
 };
 
-// Lifecycle hooks
-onMounted(async() => {
-  document.addEventListener("keydown", handleKeydown);
+// Mounted
+onMounted(() => {
+  fetchUserFromSession(); // gọi session trước để có user_id
+  document.addEventListener('keydown', handleKeydown);
 });
 
+// Unmounted
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleKeydown);
-  document.body.style.overflow = "auto";
+  document.removeEventListener('keydown', handleKeydown);
+  document.body.style.overflow = 'auto';
 });
-
-watch(
-  [userName, userEmail, userMobile, userAddress],
-  ([newName, newEmail, newMobile, newAddress]) => {
-    console.log("🟢 Props đã thay đổi!");
-    editForm.value.userName = newName || "";
-    editForm.value.userEmail = newEmail || "";
-    editForm.value.userMobile = newMobile || "";
-    editForm.value.userAddress = newAddress || "";
-  }
-);
-
 </script>
-
-
 <style scoped>
 @import "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css";
 
-/* ============== GLOBAL STYLES ============== */
 * {
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ============== ACCOUNT INFO SECTION ============== */
+/* ============== MAIN CONTAINER ============== */
 .account-info {
-  width: 35%;
-  padding: 20px;
-  border: 1px solid #ddd;
-  background: white;
-  margin-top: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 25px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  position: relative;
 }
 
 .account-info:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
-/* Header */
+/* ============== MESSAGE ALERT ============== */
+.message-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 400px;
+  min-width: 300px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  z-index: 9999;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Success Message */
+.message-alert:not(.error) {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border: 1px solid #b3d4be;
+  color: #155724;
+}
+
+/* Error Message */
+.message-alert.error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 1px solid #f1b0b7;
+  color: #721c24;
+}
+
+.message-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-right: 30px;
+}
+
+.success-icon {
+  color: #28a745;
+  font-size: 16px;
+}
+
+.error-icon {
+  color: #dc3545;
+  font-size: 16px;
+}
+
+.close-message {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-message:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+/* ============== HEADER ============== */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
-  padding: 0 2px;
+  margin-bottom: 20px;
+  padding: 0 5px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .header strong {
-  font-size: 16px;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: 18px;
+  color: #2c3e50;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .icon-bounce {
-  color: #007acc;
+  color: #3498db;
+  font-size: 20px;
   animation: bounce 2s infinite;
 }
 
 .view-all {
-  color: #007acc;
+  color: #3498db;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  padding: 10px 16px;
+  border-radius: 25px;
+  background: rgba(52, 152, 219, 0.1);
+  border: 1px solid rgba(52, 152, 219, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
 }
 
 .view-all:hover {
-  background-color: #f0f8ff;
-  color: #0056b3;
+  background: #3498db;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
 }
 
 .divider {
   border: none;
-  height: 1px;
-  background-color: #e9ecef;
-  margin: 15px 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3498db, #2ecc71, #3498db);
+  margin: 20px 0;
+  border-radius: 2px;
 }
 
-/* Account Grid */
+/* ============== ACCOUNT GRID ============== */
 .account-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 16px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
   font-size: 14px;
-  color: #333;
 }
 
 .account-item {
-  padding: 12px;
-  border-radius: 6px;
-  background: #f8f9fa;
-  border-left: 3px solid #e9ecef;
+  padding: 20px;
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.account-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #3498db, #2ecc71);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.account-item:hover::before {
+  transform: scaleY(1);
 }
 
 .account-item:hover {
-  border-left-color: #007acc;
-  background: #fff;
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.account-grid strong {
-  display: block;
+.account-item strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
-  margin-bottom: 4px;
-  color: #555;
-  font-size: 12px;
+  margin-bottom: 8px;
+  color: #2c3e50;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* ============== POPUP STYLES ============== */
+.account-item strong i {
+  color: #3498db;
+  width: 16px;
+}
+
+.account-item p {
+  margin: 0;
+  color: #555;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* ============== POPUP OVERLAY ============== */
 .popup-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(2px);
+  z-index: 10000;
+  backdrop-filter: blur(3px);
   animation: fadeIn 0.3s ease-out;
+  padding: 20px;
 }
 
 .edit-user-form {
   background: white;
   border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
+  width: 100%;
+  max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Popup Header */
+/* ============== POPUP HEADER ============== */
+.popup-header {
+  background: #f8f9fa;
+  color: #2c3e50;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+.popup-header i {
+  font-size: 18px;
+  color: #6c757d;
+}
+
+.popup-title {
+  padding-top: 20px;
+  padding-left: 22px;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
 .close-popup {
   position: absolute;
-  top: 15px;
+  top: 50%;
   right: 20px;
+  transform: translateY(-50%);
   background: none;
   border: none;
-  font-size: 24px;
-  color: #666;
+  font-size: 20px;
+  color: #6c757d;
   cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  padding: 6px;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -420,27 +501,13 @@ watch(
 }
 
 .close-popup:hover {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.close-popup:active {
-  transform: scale(0.95);
-}
-
-.popup-title {
-  margin: 0;
-  padding: 25px 25px 20px 25px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  border-bottom: 1px solid #eee;
-  text-align: center;
+  background: #e9ecef;
+  color: #495057;
 }
 
 /* ============== FORM STYLES ============== */
 .edit-user-form form {
-  padding: 25px;
+  padding: 24px;
 }
 
 .form-group {
@@ -448,87 +515,103 @@ watch(
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
   font-weight: 500;
-  color: #555;
+  color: #495057;
+  font-size: 14px;
+}
+
+.form-group label i {
+  color: #6c757d;
+  width: 16px;
   font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
   padding: 12px 16px;
-  border: 2px solid #e1e5e9;
+  border: 1px solid #d1d3d4;
   border-radius: 8px;
   font-size: 14px;
   transition: all 0.2s ease;
-  background-color: #fff;
+  background: #fff;
   box-sizing: border-box;
+  color: #495057;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #007acc;
-  box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.1);
-  background-color: #fafbfc;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
 .form-group input:hover {
-  border-color: #c1c9d2;
+  border-color: #adb5bd;
 }
 
 .form-group input::placeholder {
-  color: #999;
+  color: #adb5bd;
 }
 
-/* Form Buttons */
+/* ============== FORM BUTTONS ============== */
 .form-buttons {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
-  margin-top: 30px;
+  margin-top: 32px;
   padding-top: 20px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #e9ecef;
 }
 
 .form-buttons button {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .cancel-btn {
-  background-color: #6c757d;
-  color: white;
+  background: #fff;
+  color: #6c757d;
+  border-color: #d1d3d4;
 }
 
 .cancel-btn:hover {
-  background-color: #5a6268;
-  transform: translateY(-1px);
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  color: #495057;
 }
 
 .form-buttons button[type="submit"] {
-  background-color: #007acc;
+  background: #007bff;
   color: white;
+  border-color: #007bff;
 }
 
 .form-buttons button[type="submit"]:hover:not(:disabled) {
-  background-color: #0056b3;
-  transform: translateY(-1px);
+  background: #0056b3;
+  border-color: #0056b3;
 }
 
 .form-buttons button[type="submit"]:disabled {
-  background-color: #ccc;
+  background: #e9ecef;
+  color: #6c757d;
+  border-color: #d1d3d4;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* Loading State */
+/* ============== LOADING STATE ============== */
 .loading {
   position: relative;
   color: transparent !important;
@@ -556,11 +639,22 @@ watch(
 
 @keyframes slideIn {
   from {
-    transform: translateY(-30px);
+    transform: translateY(-30px) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
     opacity: 1;
   }
 }
@@ -579,21 +673,35 @@ watch(
 /* ============== RESPONSIVE DESIGN ============== */
 @media (max-width: 768px) {
   .account-info {
-    width: 100%;
+    width: 95%;
+    padding: 20px;
+    margin: 10px auto;
   }
   
   .account-grid {
     grid-template-columns: 1fr;
   }
   
+  .header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .popup-overlay {
+    padding: 15px;
+  }
+  
   .edit-user-form {
-    width: 95%;
-    margin: 20px;
+    max-width: 100%;
+  }
+  
+  .popup-header {
+    padding: 16px 20px;
   }
   
   .popup-title {
-    font-size: 18px;
-    padding: 20px 20px 15px 20px;
+    font-size: 16px;
   }
   
   .edit-user-form form {
@@ -608,5 +716,53 @@ watch(
   .form-buttons button {
     width: 100%;
   }
+  
+  .message-alert {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: none;
+    min-width: auto;
+  }
 }
-</style>
+
+@media (max-width: 480px) {
+  .account-info {
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  .account-item {
+    padding: 15px;
+  }
+  
+  .header strong {
+    font-size: 16px;
+  }
+  
+  .popup-overlay {
+    padding: 10px;
+  }
+  
+  .edit-user-form {
+    border-radius: 8px;
+  }
+  
+  .popup-header {
+    padding: 14px 16px;
+  }
+  
+  .edit-user-form form {
+    padding: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+  }
+}</style>
