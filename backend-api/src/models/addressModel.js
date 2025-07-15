@@ -28,15 +28,15 @@ const AddressModel = {
         });
     },
 
-    editAddress: (user_id,record_id,data)=>{
+    editAddress: (record_id,data)=>{
         return db('user_record')
         .update(data)
-        .where({ user_id: user_id, record_id: record_id })
+        .where({ record_id: record_id })
     },
 
-    delAddress: (record_id,user_id)=>{
+    delAddress: (record_id)=>{
         return db('user_record')
-        .where({ user_id: user_id, record_id: record_id })
+        .where({ record_id: record_id })
         .del()
         
     },
@@ -44,6 +44,7 @@ const AddressModel = {
     getAddressList: (user_id)=>{
         return db('user_record')
         .select('user_record.user_id',
+                'user_record.record_id',
                 'user_record.record_username',
                 'user_record.record_mobile',
                 'user_record.street_address',
@@ -53,6 +54,7 @@ const AddressModel = {
         .innerJoin('province','province.province_id','user_record.province_id')
         .innerJoin('ward','ward.ward_id','user_record.ward_id')
         .where({user_id: user_id})
+        .orderBy ('user_record.record_id','asc')
     }
 
 }

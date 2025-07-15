@@ -48,18 +48,16 @@ const addNewAddress = async(req,res)=>{
 
 const editAddress = async(req,res) =>{
     try{
-        const {user_id,record_id} = req.params
-        const {record_username,record_mobile,province_id,ward_id,street_address} = req.body
+        const {record_id} = req.params
+        const {record_username,record_mobile,province_id,ward_id,street_address,address_type} = req.body
 
-        if(!user_id){
-            return res.status(401).json({message: "You haven't logged in yet"})
-        }
-        await addressModel.editAddress(user_id,record_id,{
+        await addressModel.editAddress(record_id,{
             record_username,
             record_mobile,
             province_id,
             ward_id,
-            street_address
+            street_address,
+            address_type
         })
         
         return res.status(200).json({message: 'User address updated'})
@@ -72,8 +70,8 @@ const editAddress = async(req,res) =>{
 
 const delAddress = async(req,res) =>{
     try{
-        const {user_id,record_id} = req.params
-        await addressModel.delAddress(user_id,record_id)
+        const {record_id} = req.params
+        await addressModel.delAddress(record_id)
         return res.status(200).json({message: 'Address deleted'})
     }catch(err){
         console.log(err)

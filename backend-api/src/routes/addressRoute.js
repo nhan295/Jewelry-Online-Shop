@@ -7,7 +7,7 @@ module.exports.setup = (app)=>{
     router.get('/provinces',addressController.getProvince);   //done
     router.get('/:province_id/wards/',addressController.getWardByProvince); //done
     router.post('/add/:user_id',addressController.addNewAddress);  //done
-    router.put('/edit/:user_id/:record_id',addressController.editAddress); //done
+    router.put('/edit/:record_id',addressController.editAddress); //done
     router.get('/list/:user_id',addressController.getAddressList);  //done
-    router.delete('/delete/:user_id/:record_id',addressController.delAddress) //done
+    router.delete('/delete/:record_id',addressController.delAddress) //done
 }
