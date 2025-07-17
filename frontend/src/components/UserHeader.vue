@@ -4,7 +4,7 @@
     <div class="header">
       <div class="header-top">
         <div class="logo-hot">
-          <a href="/userpage" class="logo" @click.prevent="reloadPage">XIES XIES</a>
+          <a href="/homepage" class="logo" @click.prevent="reloadPage">XIES XIES</a>
 
         </div>
         <div class="header-icons">
@@ -68,7 +68,7 @@ const router = useRouter();
 const jewelry_name = ref('');
 
 const reloadPage = () => {
-  window.location.href = "/userpage";
+  window.location.href = "/homepage";
 };
 
 const activeCategory = ref(null);

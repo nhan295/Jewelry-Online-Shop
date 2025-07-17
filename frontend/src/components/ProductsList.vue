@@ -88,12 +88,11 @@ const fetchProduct = async () => {
 
 const emits = defineEmits(['select-product'])
 
-const selectedProduct = (jewelry_id,color_id,color_code)=>{   
-  emits('select-product',{jewelry_id,color_id,color_code})   
+const selectedProduct = (jewelry_id, color_id, color_code) => {
+  emits('select-product', { jewelry_id, color_id, color_code });
 
-  console.log('Clicked:', { jewelry_id, color_id,color_code});
-}
-
+  console.log('Clicked:', { jewelry_id, color_id, color_code });
+};
 watch(() => props.sub_id, fetchProduct, { immediate: true });
 </script>
 
