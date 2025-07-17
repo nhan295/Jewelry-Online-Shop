@@ -5,17 +5,16 @@ import MainPage from './views/MainPage.vue';
 import ProfilePage from './views/ProfilePage.vue';
 import BrowsePage from './views/BrowsePage.vue';
 import CartPage from './views/CartPage.vue';
-import CollectionPage from './views/CollectionPage.vue'
-
-
+import CollectionPage from './views/CollectionPage.vue';
 
 const routes = [
     {path: '/', component: index},
     // {path: '/', component: BrowsePage},
-    {path: '/userpage', component: MainPage},
+    {path: '/homepage', component: MainPage},
     {path: '/profile', component: ProfilePage},
     {path: '/cart',component: CartPage},
     {path: '/product/collection/:categoryName',component: CollectionPage}
+   
 
 ];
 
