@@ -234,20 +234,29 @@ watch(() => route.params.categoryName, fetchProduct, { immediate: true });
 .price-filter {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  width: 100%;
 }
 
 .price-input {
-  flex: 1;
-  padding: 8px 12px;
+  width: 90px;
+  max-width: 90px;
+  padding: 6px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 13px;
+  box-sizing: border-box;
 }
 
 .price-input:focus {
   outline: none;
   border-color: #007bff;
+}
+
+.price-filter span {
+  color: #666;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
 .color-filter {
@@ -396,6 +405,12 @@ watch(() => route.params.categoryName, fetchProduct, { immediate: true });
   .price-filter {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+  }
+  
+  .price-input {
+    width: 100%;
+    max-width: 100%;
   }
 }
 </style>
