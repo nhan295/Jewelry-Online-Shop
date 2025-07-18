@@ -353,7 +353,7 @@ const handleLogin = async () => {
       localStorage.setItem("user", JSON.stringify(resData.message))
       showMessage('Đăng nhập thành công!', 'success')
       setTimeout(() => {
-        router.push('/userpage')
+        router.push('/homepage')
       }, 1500)
     } else {
       showMessage(resData.message || 'Đăng nhập thất bại', 'error')

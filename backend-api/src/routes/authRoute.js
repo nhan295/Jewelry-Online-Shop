@@ -18,7 +18,7 @@ router.get('/google/callback',
     }),
     (req,res)=>{
         req.session.user = req.user;
-        res.redirect('http://localhost:5173/userpage');
+        res.redirect('http://localhost:5173/homepage');
     }
 );
 
