@@ -21,10 +21,16 @@
             <p>Thọ hoà đông A, Xã Phú Tâm</p>
             <p>Huyện Châu Thành, Sóc Trăng</p>
             <p>Giờ mở cửa: 8:00 - 22:00</p>
-            <div style="width: 100%; height: 80px; background: #e8e8e8; border-radius: 4px; margin: 12px 0; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px;">
-                Bản đồ
+            <div >
+                <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3932.6216890703568!2d105.96367807478957!3d9.713292990377944!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zOcKwNDInNDcuOSJOIDEwNcKwNTcnNTguNSJF!5e0!3m2!1sen!2s!4v1755092745453!5m2!1sen!2s" 
+                width="90%" 
+                height="150" 
+                style="border:0;" 
+                allowfullscreen 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
-            <a href="#">Xem bản đồ</a>
+            <a href="https://www.google.com/maps/@9.713621,105.9637211,17z?entry=ttu&g_ep=EgoyMDI1MDgxMC4wIKXMDSoASAFQAw%3D%3D">Xem bản đồ</a>
         </div>
 
         <div class="col-contact">

@@ -94,8 +94,7 @@ const fetchProductDetail = async()=>{
     }
 }
 
-
-const addCart = async() =>{
+const handleAddToCart = async() =>{
     try{
         const response = await fetch('http://localhost:3000/api/v1/cart/add',{
             method: 'POST',
@@ -125,15 +124,12 @@ const addCart = async() =>{
         error.value = err.message
     }
 }
-function handleAddToCart(){
-  addCart();
-}
+
 const emit = defineEmits(['update:color_id','get-user']) 
 const emitColorChange  = (color_id)=>{
   if(color_id !== props.color_id)   //neu mau bam vao khac mau hien tai
     emit('update:color_id',color_id)
 }
-
 
 
 onMounted(() => {
