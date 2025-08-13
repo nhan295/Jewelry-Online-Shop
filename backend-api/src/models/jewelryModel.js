@@ -15,7 +15,7 @@ const jewelryModel = {
                 'jewelry.jewelry_id',
                 'sub_categories.sub_name',
                 'jewelry.jewelry_price', 
-                db.raw(`CONCAT('./assets/image/', jewelry_img.image) as image`),
+                db.raw(`CONCAT('../../assets/image/', jewelry_img.image) as image`),
                 'jewelry_img.img_id',
                 'color_code.color_name',
                 'color_code.color_id')
@@ -33,7 +33,7 @@ const jewelryModel = {
         return db('jewelry')
         .select('jewelry.jewelry_name',
                 'jewelry.jewelry_id',
-                db.raw(`CONCAT('./assets/image/', jewelry_img.image) as image`),
+                db.raw(`CONCAT('../../assets/image/', jewelry_img.image) as image`),
                 'jewelry_img.img_id',
                 'jewelry.jewelry_price',
                 'color_code.color_name',
@@ -61,7 +61,7 @@ const jewelryModel = {
                 'jewelry.jewelry_price', 
                 'color_code.color_name',
                 'size.size_number',
-                db.raw(`CONCAT('./assets/image/', jewelry_img.image) as image`),
+                db.raw(`CONCAT('../../assets/image/', jewelry_img.image) as image`),
             )
         .innerJoin('size','size.jewelry_id','jewelry.jewelry_id')
         .leftJoin('color_code',function(){
@@ -83,7 +83,7 @@ const jewelryModel = {
                 'jewelry.jewelry_id',
                 'sub_categories.sub_name',
                 'jewelry.jewelry_price', 
-                 db.raw(`CONCAT('./assets/image/', jewelry_img.image) as image`),
+                 db.raw(`CONCAT('../../assets/image/', jewelry_img.image) as image`),
                 'jewelry_img.img_id',
                 'color_code.color_name',
                 'color_code.color_id')
@@ -104,7 +104,7 @@ const jewelryModel = {
             'jewelry.jewelry_id',
             'sub_categories.sub_name',
             'jewelry.jewelry_price',
-            db.raw(`CONCAT('./assets/image/', jewelry_img.image) as image`),
+            db.raw(`CONCAT('../../assets/image/', jewelry_img.image) as image`),
             'jewelry_img.img_id',
             'color_code.color_name',
             'color_code.color_id',

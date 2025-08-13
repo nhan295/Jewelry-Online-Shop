@@ -5,7 +5,7 @@ import MainPage from './views/MainPage.vue';
 import ProfilePage from './views/ProfilePage.vue';
 import BrowsePage from './views/BrowsePage.vue';
 import CartPage from './views/CartPage.vue';
-import CollectionPage from './views/CollectionPage.vue';
+import CollectionPage from './components/Collection.vue';
 
 const routes = [
     {path: '/', component: index},
