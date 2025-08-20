@@ -8,12 +8,19 @@
       <!-- Danh sách sản phẩm trái-->
       <div class="cart-items">
         <div class="select-all">
-          <input type="checkbox" >
+          <input 
+          type="checkbox"
+          v-model="selectAll"
+          @change="toggleSelectAll" > <!-- khi thay đổi gọi hàm toggleSelectAll-->
           <label for="select-all">Chọn tất cả</label>
         </div>
 
         <div v-for="(item, index) in cart" :key="index" class="cart-item">
-          <input type="checkbox" class="item-checkbox">
+          <input 
+            type="checkbox"
+            v-model="item.selected"
+            @change="updateSelectAll"
+           class="item-checkbox">
           
           <img :src="item.image" alt="product" class="product-img">
           
@@ -44,8 +51,8 @@
 
         <div class="price-details">
           <div class="price-row">
-            <span>Tổng sản phẩm (???)</span>
-            <span>{{ Number(totalCartPrice).toLocaleString() }}₫</span>
+            <span>Tổng sản phẩm ({{ selectedItemCount }})</span>
+            <span>{{ Number(selectedItemPrice).toLocaleString() }}₫</span>
           </div>
           <div class="price-row">
             <span>Khuyến mãi</span>
@@ -53,7 +60,7 @@
           </div>
           <div class="total-row">
             <span>Tổng cộng</span>
-            <span>{{ Number(totalCartPrice).toLocaleString() }}₫</span>
+            <span>{{ Number(selectedItemPrice).toLocaleString() }}₫</span>
           </div>
         </div>
 
@@ -89,6 +96,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 
 const cart = ref([]);
+const selectAll = ref(false);
 
 const props = defineProps({
   user_id: [String, Number],
@@ -102,7 +110,10 @@ const getCartItem = async () => {
     );
     const data = await response.json();
     if (response.ok) {
-      cart.value = data.item || [];
+      cart.value = (data.item || []).map(item=>({
+        ...item,
+        selected:false, // Thêm thuộc tính selected cho mỗi item
+      }));
     } else {
       cart.value = [];
     }
@@ -146,6 +157,37 @@ const decreaseQty = (index) => {
   }
 };
 
+const toggleSelectAll = ()=>{
+  cart.value.forEach(item =>{
+    item.selected = selectAll.value // click vào checkbox "Chọn tất cả" sẽ chọn (item.selected = true) hoặc bỏ chọn tất cả các sản phẩm
+ })
+}
+
+const updateSelectAll = ()=>{
+  const allSelected = cart.value.every(item => item.selected); // tất cả sản phẩm được chọn => auto check "Chọn tất cả"
+  const nonSelected = cart.value.some(item => !item.selected);
+
+  if(allSelected){
+    selectAll.value = true;
+  }else if(nonSelected){
+    selectAll.value = false;
+  }else{
+    selectAll.value = false
+  }
+}
+ // tính tổng giá của sản phẩm được chọn
+const selectedItemPrice = computed(()=>{
+  return cart.value
+  .filter(item =>item.selected)
+  .reduce ((total,item)=> total + item.jewelry_price * item.quantity,0)
+})
+
+ // đếm số lượng sản phẩm được chọn
+const selectedItemCount = computed(()=>{
+  return cart.value
+  .filter(item => item.selected)
+  .reduce((total,item)=> total + item.quantity,0)
+})
 const totalCartPrice = computed(() => {
   return cart.value.reduce(
     (total, item) => total + item.jewelry_price * item.quantity, 0
@@ -172,7 +214,7 @@ watch(
 
 <style scoped>
 .cart-container {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   font-family: 'Inter', sans-serif;
