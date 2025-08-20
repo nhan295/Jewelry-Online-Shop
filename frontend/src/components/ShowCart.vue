@@ -78,7 +78,7 @@
         </div>
 
         <button class="checkout-btn">Thanh toán</button>
-        <a href="/userpage" class="continue-shopping">← Tiếp tục mua sắm</a>
+        <a href="/homepage" class="continue-shopping">← Tiếp tục mua sắm</a>
       </div>
     </div>
 
@@ -87,7 +87,7 @@
       <div class="empty-icon">🛒</div>
       <h3>Giỏ hàng trống</h3>
       <p>Thêm sản phẩm vào giỏ hàng để tiếp tục</p>
-      <a href="/userpage" class="shop-btn">Mua sắm ngay</a>
+      <a href="/homepage" class="shop-btn">Mua sắm ngay</a>
     </div>
   </div>
 </template>
@@ -188,11 +188,6 @@ const selectedItemCount = computed(()=>{
   .filter(item => item.selected)
   .reduce((total,item)=> total + item.quantity,0)
 })
-const totalCartPrice = computed(() => {
-  return cart.value.reduce(
-    (total, item) => total + item.jewelry_price * item.quantity, 0
-  );
-});
 
 const totalCartItem = computed(() => {
   return cart.value.reduce((total, item) => total + item.quantity, 0);
