@@ -16,7 +16,7 @@ passport.use(
         const name = profile.displayName;
 
         // Kiểm tra người dùng đã tồn tại chưa
-        const users = await db("user").where({ user_email: email });
+        const users = await db("users").where({ user_email: email });
         let user;
 
         if (users.length > 0) {
@@ -31,9 +31,10 @@ passport.use(
             date_created: new Date(),
           };
 
-          const [insertedId] = await db("user").insert(newUser);
-          newUser.user_id = insertedId;
-          user = newUser;
+          const [insertedId] = await db("users").insert(newUser).returning("*"); // returning view PostgreSQL
+          user = insertedId;
+          // newUser.user_id = insertedId;
+          // user = newUser;
 
           await sendWelcomeEmail(email, name);
         }
@@ -53,8 +54,8 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (user_id, done) => {
   //lấy lại đầy đủ thông tin người dùng từ user_id trong session, gán vào req.user cho các request tiếp theo
   try {
-    const user = await db("user").where({ user_id: user_id }).first();
-    if (user.length === 0) return done(null, false);
+    const user = await db("users").where({ user_id: user_id }).first();
+    if (!user) return done(null, false);
     return done(null, user); //gán lại user object vào req.user
   } catch (err) {
     return done(err);

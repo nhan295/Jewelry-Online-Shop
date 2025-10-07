@@ -33,7 +33,7 @@ const register = async(req,res) =>{
         if(!username || !email || !password || !confirmPass){
             return res.status(400).json({message:'Missing fiels'})
         }
-        const existUsername = await userModel.getUserName(username);
+        const existUsername = await userModel. getUserByUsername(username);
         const existEmail = await userModel.getUserEmail(email);
 
         if(existEmail){
@@ -50,7 +50,7 @@ const register = async(req,res) =>{
         
         await userModel.register(username, email, hashedPassword, address, date);
 
-        req.session.user = await userModel.getUserData(username);
+        req.session.user = await userModel.getUserByUsername(username);
         req.session.user_name =username
 
         res.status(200).json({message: req.session.user})

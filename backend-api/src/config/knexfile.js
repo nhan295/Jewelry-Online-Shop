@@ -1,13 +1,13 @@
 require('dotenv').config(); // doc noi dung .env va them vao process.env
-const {DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME} = process.env
+const {DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_DATABASE} = process.env
 
 module.exports = {
-    client: 'mysql',
+    client: 'pg',
     connection: {
-        host: DB_HOST,
+        host: DB_HOST,  
         port: DB_PORT,
-        user: DB_USER,
-        password: DB_PASS,
-        database: DB_NAME
+        user: DB_USERNAME,
+        password: DB_PASSWORD,
+        database: DB_DATABASE
     },
 };
