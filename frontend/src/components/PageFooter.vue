@@ -38,7 +38,7 @@
             <p><strong>Điện thoại để được tư vấn trực tiếp</strong></p>
             <p>0375458318</p>
             <p><strong>E-mail:</strong></p>
-            <p>xies2@gmail.com</p>
+            <p>support@xiesxies.com</p>
             <div class="social-icons">
                 <a href="#" class="social-icon">f</a>
                 <a href="#" class="social-icon">@</a>
